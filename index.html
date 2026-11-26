@@ -3,39 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TripTogether</title>
-
+<title>Our Travel Book</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 *{box-sizing:border-box}
 :root{
- --bg:#f7f5f0;--card:#fff;--text:#26352f;
- --muted:#84918a;--green:#597c68;
- --light:#e8eee8;--accent:#d7a77c
+ --bg:#f7f5f0;--card:#fff;--text:#26352f;--muted:#84918a;
+ --green:#597c68;--light:#e8eee8;--accent:#d7a77c
 }
-body{
- margin:0;background:var(--bg);color:var(--text);
- font-family:system-ui,-apple-system,sans-serif
-}
+body{margin:0;background:var(--bg);color:var(--text);
+ font-family:system-ui,-apple-system,sans-serif}
 header{padding:25px 20px 18px;background:#e9eee7}
 .logo{font-size:12px;letter-spacing:3px;color:var(--green);font-weight:700}
 h1{font-size:27px;margin:8px 0 5px;font-weight:650}
 .subtitle{font-size:14px;color:var(--muted)}
 .container{max-width:750px;margin:auto;padding:18px}
-.auth-wrap{max-width:500px;margin:22px auto;padding:22px;background:white;border-radius:20px}
 .section-title{font-size:18px;font-weight:700;margin:20px 0 12px}
 .cities{display:flex;gap:9px;overflow:auto;padding-bottom:8px}
-.city{border:1px solid #dce3dc;background:white;padding:11px 16px;border-radius:24px;white-space:nowrap;font-size:14px}
+.city{border:1px solid #dce3dc;background:white;padding:11px 16px;
+ border-radius:24px;white-space:nowrap;font-size:14px;cursor:pointer}
 .city.active{background:var(--green);color:white;border-color:var(--green)}
 .toolbar{display:flex;gap:8px;margin:15px 0}
-.search{flex:1;min-width:0;border:1px solid #e1e5df;border-radius:12px;padding:12px;font-size:15px}
-.add-btn,.primary{border:none;background:var(--green);color:white;border-radius:12px;padding:12px 16px;font-weight:600}
+.search{flex:1;min-width:0;border:1px solid #e1e5df;border-radius:12px;
+ padding:12px;font-size:15px}
+.add-btn,.primary{border:none;background:var(--green);color:white;
+ border-radius:12px;padding:12px 16px;font-weight:600}
 .filters{display:flex;gap:8px;margin-bottom:15px}
-.filter{border:none;background:#e9ece7;border-radius:20px;padding:9px 13px;color:#53645a}
+.filter{border:none;background:#e9ece7;border-radius:20px;
+ padding:9px 13px;color:#53645a}
 .filter.active{background:var(--green);color:white}
-.card{background:white;border-radius:18px;overflow:hidden;margin-bottom:14px;box-shadow:0 3px 15px rgba(40,60,40,.04)}
-.photo{height:180px;background:#e9eee7;display:flex;align-items:center;justify-content:center;color:#9ba79e;font-size:14px;overflow:hidden}
+.card{background:white;border-radius:18px;overflow:hidden;margin-bottom:14px;
+ box-shadow:0 3px 15px rgba(40,60,40,.04)}
+.photo{height:180px;background:#e9eee7;display:flex;align-items:center;
+ justify-content:center;color:#9ba79e;font-size:14px;overflow:hidden}
 .photo img{width:100%;height:100%;object-fit:cover}
 .card-content{padding:15px}
 .card-top{display:flex;justify-content:space-between;gap:10px}
@@ -49,20 +50,26 @@ h1{font-size:27px;margin:8px 0 5px;font-weight:650}
 .action.visited{background:#e4eee6;color:#456b53;border-color:#c6dccb}
 .delete{color:#a45e58}
 .empty{text-align:center;padding:40px 20px;color:var(--muted)}
-.modal{display:none;position:fixed;inset:0;background:rgba(20,30,25,.45);z-index:10;overflow:auto}
+.modal{display:none;position:fixed;inset:0;background:rgba(20,30,25,.45);
+ z-index:10;overflow:auto}
 .modal.open{display:block}
-.modal-box{background:var(--bg);margin:20px auto;max-width:600px;min-height:100vh;padding:22px;border-radius:20px}
+.modal-box{background:var(--bg);margin:20px auto;max-width:600px;
+ min-height:100vh;padding:22px;border-radius:20px}
 .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
 .close{border:none;background:#e7ebe5;border-radius:50%;width:38px;height:38px;font-size:22px}
 label{display:block;font-size:13px;color:#68776d;margin:14px 0 6px}
-input,textarea,select{width:100%;padding:12px;border:1px solid #dce3dc;border-radius:11px;font-size:15px;background:white}
+input,textarea,select{width:100%;padding:12px;border:1px solid #dce3dc;
+ border-radius:11px;font-size:15px;background:white}
 textarea{min-height:90px;resize:vertical}
-.save{width:100%;margin-top:20px;border:none;background:var(--green);color:white;padding:15px;border-radius:13px;font-size:16px;font-weight:700}
+.save{width:100%;margin-top:20px;border:none;background:var(--green);
+ color:white;padding:15px;border-radius:13px;font-size:16px;font-weight:700}
 .preview{max-height:150px;object-fit:cover;border-radius:12px;margin-top:10px;display:none;width:100%}
-.msg{padding:12px;border-radius:10px;background:#f1f3ee;margin:12px 0;font-size:14px}
+.auth-wrap{max-width:500px;margin:22px auto;padding:20px;background:white;border-radius:18px}
+.msg{padding:12px;border-radius:10px;background:#f1f3ee;margin:12px 0;font-size:14px;white-space:pre-wrap}
 .small{font-size:12px;color:var(--muted)}
 .hidden{display:none!important}
 .topline{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.topline button{font-size:12px;padding:8px 10px}
 .invitebox{background:#fff;border-radius:15px;padding:14px;margin:12px 0}
 .invitecode{font-size:24px;letter-spacing:3px;font-weight:700;text-align:center;padding:8px}
 .statusline{font-size:13px;color:var(--muted);margin:8px 0}
@@ -76,131 +83,162 @@ textarea{min-height:90px;resize:vertical}
 <body>
 
 <header>
- <div class="logo">✦ OUR TRAVEL BOOK</div>
- <h1>Наше путешествие</h1>
- <div class="subtitle">Места, впечатления и маленькие приключения ❤️</div>
+<div class="logo">✦ OUR TRAVEL BOOK</div>
+<h1>Наше путешествие</h1>
+<div class="subtitle">Места, впечатления и маленькие приключения ❤️</div>
 </header>
 
 <div class="container">
 
 <div id="loading" class="auth-wrap">
- <h2>Подключаем дневник путешествий ☁️</h2>
- <p id="loadingText">Подключение к облаку...</p>
- <div id="loadingMsg" class="msg hidden"></div>
+<h2>Подключаем дневник путешествий ☁️</h2>
+<p id="loadingText">Проверяем подключение...</p>
+</div>
+
+<div id="auth" class="auth-wrap hidden">
+<h2>Наш общий дневник путешествий</h2>
+<p>Войдите или создайте аккаунт, чтобы ваши места сохранялись в облаке.</p>
+
+<label>Email</label>
+<input id="email" type="email" placeholder="your@email.com">
+
+<label>Пароль</label>
+<input id="password" type="password" placeholder="Не менее 6 символов">
+
+<button class="primary" style="width:100%;margin-top:12px"
+ onclick="signInUp('signin')">Войти</button>
+
+<button class="primary" style="width:100%;margin-top:8px;background:#8a9b8f"
+ onclick="signInUp('signup')">Создать аккаунт</button>
+
+<div id="authmsg" class="msg hidden"></div>
 </div>
 
 <div id="tripSetup" class="auth-wrap hidden">
- <h2>Наше путешествие</h2>
- <p>Создайте поездку или присоединитесь к уже существующей.</p>
+<h2>Создаём вашу общую поездку</h2>
+<p>Создайте новую поездку или присоединитесь к уже существующей.</p>
 
- <label>Название поездки</label>
- <input id="tripName" value="Таиланд 2026–2027">
+<label>Название поездки</label>
+<input id="tripName" value="Таиланд 2026–2027">
 
- <label>Дата начала</label>
- <input id="tripStart" type="date">
+<label>Дата начала</label>
+<input id="tripStart" type="date">
 
- <label>Дата окончания</label>
- <input id="tripEnd" type="date">
+<label>Дата окончания</label>
+<input id="tripEnd" type="date">
 
- <button class="primary" style="width:100%;margin-top:12px" onclick="createTrip()">
- Создать поездку
- </button>
+<button class="primary" style="width:100%;margin-top:12px"
+ onclick="createTrip()">Создать поездку</button>
 
- <label>Код приглашения</label>
- <input id="joinCode" placeholder="Введите код">
+<label>Код приглашения</label>
+<input id="joinCode" placeholder="Введите код">
 
- <button class="primary" style="width:100%;margin-top:8px;background:#8a9b8f" onclick="joinTrip()">
- Присоединиться
- </button>
+<button class="primary" style="width:100%;margin-top:8px;background:#8a9b8f"
+ onclick="joinTrip()">Присоединиться</button>
 
- <div id="setupmsg" class="msg hidden"></div>
+<div id="setupmsg" class="msg hidden"></div>
 </div>
 
 <div id="app" class="hidden">
 
- <div class="topline">
-  <div class="statusline" id="statusline">Облако подключено ☁️</div>
-  <button class="action" onclick="logout()">Перезапустить подключение</button>
- </div>
+<div class="topline">
+<div class="statusline" id="statusline">Общее облачное пространство ☁️</div>
+<button class="action" onclick="logout()">Выйти</button>
+</div>
 
- <div class="invitebox">
-  <b>Поделиться поездкой с мужем</b>
-  <button class="primary" style="width:100%;margin-top:9px" onclick="makeInvite()">
-   Создать код приглашения
-  </button>
-  <div id="inviteCode" class="invitecode"></div>
-  <div class="small" id="inviteInfo">
-   Создайте код и отправьте его мужу.
-  </div>
- </div>
+<div class="invitebox">
+<b>Поделиться поездкой</b>
+<button class="primary" style="width:100%;margin-top:9px"
+ onclick="makeInvite()">Создать код приглашения</button>
+<div id="inviteCode" class="invitecode"></div>
+<div class="small" id="inviteInfo">Код можно отправить мужу.</div>
+</div>
 
- <div class="section-title">Наши направления</div>
- <div class="cities" id="cities"></div>
+<div class="section-title">Наши направления</div>
+<div class="cities" id="cities"></div>
 
- <div class="toolbar">
-  <input class="search" id="search" placeholder="🔎 Найти место...">
-  <button class="add-btn" onclick="openModal()">＋ Добавить</button>
- </div>
+<div class="toolbar">
+<input class="search" id="search" placeholder="🔎 Найти место...">
+<button class="add-btn" onclick="openModal()">＋ Добавить</button>
+</div>
 
- <div class="filters">
-  <button class="filter active" data-filter="all">Все</button>
-  <button class="filter" data-filter="want">❤️ Хочу</button>
-  <button class="filter" data-filter="visited">✓ Были</button>
- </div>
+<div class="filters">
+<button class="filter active" data-filter="all">Все</button>
+<button class="filter" data-filter="want">❤️ Хочу</button>
+<button class="filter" data-filter="visited">✓ Были</button>
+</div>
 
- <div id="list" class="card-list"></div>
-
+<div id="list" class="card-list"></div>
 </div>
 </div>
 
 <div class="modal" id="modal">
- <div class="modal-box">
-  <div class="modal-head">
-   <h2 id="modalTitle">Добавить место</h2>
-   <button class="close" onclick="closeModal()">×</button>
-  </div>
+<div class="modal-box">
 
-  <form id="placeForm">
-   <input type="hidden" id="placeId">
+<div class="modal-head">
+<h2 id="modalTitle">Добавить место</h2>
+<button class="close" onclick="closeModal()">×</button>
+</div>
 
-   <label>Название места *</label>
-   <input id="name" required placeholder="Например: красивый пляж">
+<form id="placeForm">
+<input type="hidden" id="placeId">
 
-   <label>Город / направление *</label>
-   <select id="city"></select>
+<label>Название места *</label>
+<input id="name" required placeholder="Например: красивый пляж">
 
-   <label>Фото</label>
-   <input id="photo" type="file" accept="image/*">
-   <img id="preview" class="preview">
+<label>Город / направление *</label>
+<select id="city"></select>
 
-   <label>Локация / ссылка на карту</label>
-   <input id="location" placeholder="Google Maps, координаты или адрес">
+<label>Фото</label>
+<input id="photo" type="file" accept="image/*">
+<img id="preview" class="preview">
 
-   <label>Сайт / Instagram / другая ссылка</label>
-   <input id="website" placeholder="https://...">
+<label>Локация / ссылка на карту</label>
+<input id="location" placeholder="Google Maps, координаты или адрес">
 
-   <label>Наши заметки</label>
-   <textarea id="notes" placeholder="Что хотим увидеть? Цена, советы..."></textarea>
+<label>Сайт / Instagram / другая ссылка</label>
+<input id="website" placeholder="https://...">
 
-   <label>Статус</label>
-   <select id="status">
-    <option value="want">❤️ Хочу посетить</option>
-    <option value="visited">✓ Мы здесь были!</option>
-   </select>
+<label>Наши заметки</label>
+<textarea id="notes" placeholder="Что хотим увидеть? Что важно? Цена, советы..."></textarea>
 
-   <button class="save" type="submit">Сохранить место</button>
-  </form>
- </div>
+<label>Статус</label>
+<select id="status">
+<option value="want">❤️ Хочу посетить</option>
+<option value="visited">✓ Мы здесь были!</option>
+</select>
+
+<button class="save" type="submit">Сохранить место</button>
+</form>
+</div>
 </div>
 
 <script>
-const SUPABASE_URL="https://gmjfxdbefckdmiktxnpb.supabase.co";
-const SUPABASE_KEY="sb_publishable_-RUGcAoS_ZGKpXSSBtAPSQ_0bFeU0Lr";
+/* ===============================
+   НАСТРОЙКИ SUPABASE
+================================ */
 
-const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const SUPABASE_URL = "https://gmjfxdbefckdmiktxnpb.supabase.co";
+const SUPABASE_KEY = "sb_publishable_-RUGcAoS_ZGKpXSSBtAPSQ_0bFeU0Lr";
 
-const initialCities=[
- "Бангкок","Као Лак","Ко Яо Яй","Патонг","Най Харн","Най Янг"
+const sb = window.supabase.createClient(
+ SUPABASE_URL,
+ SUPABASE_KEY,
+ {
+  auth:{
+   persistSession:true,
+   autoRefreshToken:true,
+   detectSessionInUrl:true
+  }
+ }
+);
+
+/* ===============================
+   ПЕРЕМЕННЫЕ
+================================ */
+
+const initialCities = [
+ 'Бангкок','Као Лак','Ко Яо Яй','Патонг','Най Харн','Най Янг'
 ];
 
 let user=null;
@@ -210,245 +248,414 @@ let cities=[];
 let places=[];
 let destinationMap={};
 let photoMap={};
-let activeCity="Все";
-let activeFilter="all";
+let activeCity='Все';
+let activeFilter='all';
 let editingId=null;
 let currentPhotoFile=null;
-let currentPhotoUrl="";
+let currentPhotoUrl='';
 
 const $=id=>document.getElementById(id);
 
+/* ===============================
+   УТИЛИТЫ
+================================ */
+
 function showMsg(id,msg){
  $(id).textContent=msg;
- $(id).classList.remove("hidden");
+ $(id).classList.remove('hidden');
 }
 
 function hideMsg(id){
- $(id).classList.add("hidden");
+ $(id).classList.add('hidden');
+}
+
+function showLoading(text){
+ $('loading').classList.remove('hidden');
+ $('loadingText').textContent=text;
+}
+
+function hideLoading(){
+ $('loading').classList.add('hidden');
+}
+
+function timeout(promise,ms=12000){
+ return Promise.race([
+  promise,
+  new Promise((_,reject)=>
+   setTimeout(()=>reject(new Error('Превышено время ожидания подключения.')),ms)
+  )
+ ]);
 }
 
 function escapeHtml(s){
- return String(s||"").replace(/[&<>"']/g,m=>({
-  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ return String(s||'').replace(/[&<>"']/g,m=>({
+  '&':'&amp;',
+  '<':'&lt;',
+  '>':'&gt;',
+  '"':'&quot;',
+  "'":'&#39;'
  }[m]));
 }
 
 function safeUrl(s){
- let u=String(s||"").trim();
- if(!/^https?:\/\//i.test(u))u="https://"+u;
- return u.replace(/"/g,"%22");
+ let u=String(s||'').trim();
+ if(!/^https?:\/\//i.test(u))u='https://'+u;
+ return u.replace(/"/g,'%22');
 }
 
-/* АНОНИМНЫЙ ВХОД */
+/* ===============================
+   ПОДКЛЮЧЕНИЕ
+================================ */
+
 async function startApp(){
+
+ showLoading('Проверяем подключение к Supabase...');
+
  try{
-  $("loadingText").textContent="Входим в дневник...";
-  let {data,error}=await sb.auth.getSession();
 
-  if(error)throw error;
+  const result=await timeout(sb.auth.getSession());
 
-  if(data.session){
-   user=data.session.user;
-  }else{
-   let r=await sb.auth.signInAnonymously();
-   if(r.error)throw r.error;
-   user=r.data.user;
+  if(result.error)throw result.error;
+
+  let session=result.data.session;
+
+  if(!session){
+
+   showLoading('Создаём гостевую сессию...');
+
+   const anon=await timeout(sb.auth.signInAnonymously());
+
+   if(anon.error)throw anon.error;
+
+   session=anon.data.session;
   }
+
+  if(!session){
+   throw new Error('Не удалось создать сессию пользователя.');
+  }
+
+  user=session.user;
+
+  hideLoading();
 
   await afterAuth();
 
- }catch(e){
-  $("loadingText").textContent="Не удалось подключиться";
-  showMsg("loadingMsg",e.message);
+ }catch(error){
+
+  hideLoading();
+
+  $('auth').classList.remove('hidden');
+
+  showMsg(
+   'authmsg',
+   'Ошибка подключения:\n'+
+   (error.message||error)+
+   '\n\nЕсли написано Anonymous Sign-ins disabled — необходимо включить Anonymous Sign-Ins в Supabase.'
+  );
  }
 }
 
-async function afterAuth(){
- $("loading").classList.add("hidden");
+/* ===============================
+   АВТОРИЗАЦИЯ EMAIL
+================================ */
 
- const {data,error}=await sb.from("trip_members")
-  .select("trip_id")
-  .eq("user_id",user.id);
+async function signInUp(mode){
 
- if(error){
-  $("tripSetup").classList.remove("hidden");
-  showMsg("setupmsg","Ошибка доступа к поездкам: "+error.message);
+ hideMsg('authmsg');
+
+ const email=$('email').value.trim();
+ const password=$('password').value;
+
+ if(!email||!password){
+  showMsg('authmsg','Введите email и пароль.');
   return;
  }
 
- if(data&&data.length){
-  tripId=data[0].trip_id;
-  await loadTrip();
- }else{
-  $("tripSetup").classList.remove("hidden");
- }
-}
-
-/* СОЗДАНИЕ ПОЕЗДКИ */
-async function createTrip(){
- hideMsg("setupmsg");
-
- const name=$("tripName").value.trim()||"Наше путешествие";
-
- let row={name:name,created_by:user.id};
-
- if($("tripStart").value)row.start_date=$("tripStart").value;
- if($("tripEnd").value)row.end_date=$("tripEnd").value;
-
- const {data,error}=await sb.from("trips").insert(row).select().single();
-
- if(error){
-  showMsg("setupmsg","Ошибка создания поездки: "+error.message);
+ if(password.length<6){
+  showMsg('authmsg','Пароль должен быть не короче 6 символов.');
   return;
  }
 
- tripId=data.id;
+ try{
 
- const {error:memberError}=await sb.from("trip_members").insert({
-  trip_id:tripId,
-  user_id:user.id
- });
+  let r;
 
- if(memberError){
-  showMsg("setupmsg","Поездка создана, но не удалось добавить участника: "+memberError.message);
-  return;
- }
-
- await loadTrip();
-}
-
-/* ПРИСОЕДИНЕНИЕ */
-async function joinTrip(){
- hideMsg("setupmsg");
-
- const code=$("joinCode").value.trim();
-
- if(!code){
-  showMsg("setupmsg","Введите код приглашения.");
-  return;
- }
-
- const {data,error}=await sb.rpc("join_trip_by_code",{invite_code:code});
-
- if(error){
-  showMsg("setupmsg","Не получилось присоединиться: "+error.message);
-  return;
- }
-
- tripId=data;
- await loadTrip();
-}
-
-/* ЗАГРУЗКА ПОЕЗДКИ */
-async function loadTrip(){
- const {data:t,error}=await sb.from("trips")
-  .select("*").eq("id",tripId).single();
-
- if(error){
-  showMsg("setupmsg","Не удалось загрузить поездку: "+error.message);
-  $("tripSetup").classList.remove("hidden");
-  return;
- }
-
- trip=t;
- $("tripSetup").classList.add("hidden");
- $("app").classList.remove("hidden");
- $("statusline").textContent="Общее облачное пространство ☁️";
-
- await loadData();
-}
-
-/* ЗАГРУЗКА ДАННЫХ */
-async function loadData(){
- const {data:d,error:de}=await sb.from("destinations")
-  .select("*").eq("trip_id",tripId).order("sort_order");
-
- if(de){
-  $("statusline").textContent="Ошибка направлений: "+de.message;
-  return;
- }
-
- cities=(d||[]).map(x=>x.name);
- destinationMap=Object.fromEntries((d||[]).map(x=>[x.id,x.name]));
-
- if(!cities.length){
-  for(let i=0;i<initialCities.length;i++){
-   const {error}=await sb.from("destinations").insert({
-    trip_id:tripId,
-    name:initialCities[i],
-    emoji:"📍",
-    sort_order:i
-   });
-
-   if(error){
-    $("statusline").textContent="Ошибка создания направлений: "+error.message;
-    return;
-   }
+  if(mode==='signup'){
+   r=await timeout(sb.auth.signUp({email,password}));
+  }else{
+   r=await timeout(sb.auth.signInWithPassword({email,password}));
   }
 
-  const {data:nd,error}=await sb.from("destinations")
-   .select("*").eq("trip_id",tripId).order("sort_order");
+  if(r.error)throw r.error;
 
-  if(error){
-   $("statusline").textContent=error.message;
+  if(mode==='signup'&&!r.data.session){
+   showMsg('authmsg','Аккаунт создан. Подтвердите email, если Supabase требует подтверждение, затем войдите.');
    return;
   }
 
-  cities=(nd||[]).map(x=>x.name);
-  destinationMap=Object.fromEntries((nd||[]).map(x=>[x.id,x.name]));
+  user=r.data.user;
+
+  $('auth').classList.add('hidden');
+
+  await afterAuth();
+
+ }catch(error){
+  showMsg('authmsg','Ошибка:\n'+error.message);
  }
-
- const {data:p,error:pe}=await sb.from("places")
-  .select("*").eq("trip_id",tripId).order("created_at",{ascending:false});
-
- if(pe){
-  $("statusline").textContent="Ошибка мест: "+pe.message;
-  return;
- }
-
- const {data:ph,error:phe}=await sb.from("place_photos")
-  .select("place_id,storage_path,created_at")
-  .order("created_at",{ascending:false});
-
- if(phe){
-  $("statusline").textContent="Ошибка фотографий: "+phe.message;
-  return;
- }
-
- photoMap={};
-
- for(const item of (ph||[])){
-  if(!photoMap[item.place_id]){
-   const {data:signed}=await sb.storage
-    .from("travel-photos")
-    .createSignedUrl(item.storage_path,3600);
-
-   photoMap[item.place_id]=signed?.signedUrl||"";
-  }
- }
-
- places=(p||[]).map(fromDb);
-
- renderCities();
- renderPlaces();
 }
 
+/* ===============================
+   ПОСЛЕ ВХОДА
+================================ */
+
+async function afterAuth(){
+
+ try{
+
+  const {data,error}=await timeout(
+   sb.from('trip_members')
+   .select('trip_id')
+   .eq('user_id',user.id)
+  );
+
+  if(error)throw error;
+
+  if(data&&data.length){
+
+   tripId=data[0].trip_id;
+   await loadTrip();
+
+  }else{
+
+   $('tripSetup').classList.remove('hidden');
+  }
+
+ }catch(error){
+
+  $('tripSetup').classList.remove('hidden');
+
+  showMsg(
+   'setupmsg',
+   'Ошибка доступа к trip_members:\n'+error.message+
+   '\n\nПроверьте политики RLS таблицы trip_members.'
+  );
+ }
+}
+
+/* ===============================
+   СОЗДАНИЕ ПОЕЗДКИ
+================================ */
+
+async function createTrip(){
+
+ hideMsg('setupmsg');
+
+ const name=$('tripName').value.trim()||'Наше путешествие';
+
+ const row={
+  name,
+  created_by:user.id
+ };
+
+ if($('tripStart').value)row.start_date=$('tripStart').value;
+ if($('tripEnd').value)row.end_date=$('tripEnd').value;
+
+ try{
+
+  const {data,error}=await timeout(
+   sb.from('trips').insert(row).select().single()
+  );
+
+  if(error)throw error;
+
+  tripId=data.id;
+
+  const member={
+   trip_id:tripId,
+   user_id:user.id
+  };
+
+  const {error:memberError}=await timeout(
+   sb.from('trip_members').insert(member)
+  );
+
+  if(memberError)throw memberError;
+
+  await loadTrip();
+
+ }catch(error){
+
+  showMsg(
+   'setupmsg',
+   'Ошибка создания поездки:\n'+error.message+
+   '\n\nВозможно, требуется исправить политики RLS таблиц trips и trip_members.'
+  );
+ }
+}
+
+/* ===============================
+   ПРИСОЕДИНЕНИЕ
+================================ */
+
+async function joinTrip(){
+
+ hideMsg('setupmsg');
+
+ const code=$('joinCode').value.trim();
+
+ if(!code){
+  showMsg('setupmsg','Введите код приглашения.');
+  return;
+ }
+
+ try{
+
+  const {data,error}=await timeout(
+   sb.rpc('join_trip_by_code',{invite_code:code})
+  );
+
+  if(error)throw error;
+
+  tripId=data;
+
+  await loadTrip();
+
+ }catch(error){
+
+  showMsg(
+   'setupmsg',
+   'Не получилось присоединиться:\n'+error.message
+  );
+ }
+}
+
+/* ===============================
+   ЗАГРУЗКА ПОЕЗДКИ
+================================ */
+
+async function loadTrip(){
+
+ try{
+
+  const {data,error}=await timeout(
+   sb.from('trips')
+   .select('*')
+   .eq('id',tripId)
+   .single()
+  );
+
+  if(error)throw error;
+
+  trip=data;
+
+  $('tripSetup').classList.add('hidden');
+  $('app').classList.remove('hidden');
+
+  $('statusline').textContent='Общее облачное пространство ☁️';
+
+  await loadData();
+
+ }catch(error){
+
+  $('tripSetup').classList.remove('hidden');
+
+  showMsg('setupmsg','Ошибка загрузки поездки:\n'+error.message);
+ }
+}
+
+/* ===============================
+   ЗАГРУЗКА ДАННЫХ
+================================ */
+
+async function loadData(){
+
+ try{
+
+  const {data:d,error:de}=await timeout(
+   sb.from('destinations')
+   .select('*')
+   .eq('trip_id',tripId)
+   .order('sort_order')
+  );
+
+  if(de)throw de;
+
+  cities=(d||[]).map(x=>x.name);
+
+  destinationMap=Object.fromEntries(
+   (d||[]).map(x=>[x.id,x.name])
+  );
+
+  if(!cities.length){
+
+   for(let i=0;i<initialCities.length;i++){
+
+    const {error}=await sb.from('destinations').insert({
+     trip_id:tripId,
+     name:initialCities[i],
+     emoji:'📍',
+     sort_order:i
+    });
+
+    if(error)throw error;
+   }
+
+   const {data:nd,error:ndError}=await sb.from('destinations')
+   .select('*')
+   .eq('trip_id',tripId)
+   .order('sort_order');
+
+   if(ndError)throw ndError;
+
+   cities=(nd||[]).map(x=>x.name);
+
+   destinationMap=Object.fromEntries(
+    (nd||[]).map(x=>[x.id,x.name])
+   );
+  }
+
+  const {data:p,error:pe}=await timeout(
+   sb.from('places')
+   .select('*')
+   .eq('trip_id',tripId)
+   .order('created_at',{ascending:false})
+  );
+
+  if(pe)throw pe;
+
+  places=(p||[]).map(fromDb);
+
+  renderCities();
+  renderPlaces();
+
+ }catch(error){
+
+  $('statusline').textContent='Ошибка загрузки: '+error.message;
+ }
+}
+
+/* ===============================
+   ПРЕОБРАЗОВАНИЕ ДАННЫХ
+================================ */
+
 function fromDb(p){
+
  return{
   id:p.id,
   name:p.name,
-  city:destinationMap[p.destination_id]||"",
+  city:destinationMap[p.destination_id]||'',
   destination_id:p.destination_id,
-  photo:photoMap[p.id]||"",
-  location:p.location_url||"",
-  website:p.website_url||"",
-  notes:p.notes||"",
-  status:p.status||"want",
-  category:p.category||""
+  photo:'',
+  location:p.location_url||'',
+  website:p.website_url||'',
+  notes:p.notes||'',
+  status:p.status||'want',
+  category:p.category||''
  };
 }
 
 function toDb(p,destId){
+
  return{
   trip_id:tripId,
   destination_id:destId,
@@ -462,107 +669,135 @@ function toDb(p,destId){
  };
 }
 
-/* ГОРОДА */
-function renderCities(){
- const el=$("cities");
- el.innerHTML="";
+/* ===============================
+   НАПРАВЛЕНИЯ
+================================ */
 
- ["Все",...cities].forEach(c=>{
-  const b=document.createElement("button");
-  b.className="city"+(activeCity===c?" active":"");
+function renderCities(){
+
+ const el=$('cities');
+ el.innerHTML='';
+
+ ['Все',...cities].forEach(c=>{
+
+  const b=document.createElement('button');
+
+  b.className='city'+(activeCity===c?' active':'');
   b.textContent=c;
+
   b.onclick=()=>{
    activeCity=c;
    renderCities();
    renderPlaces();
   };
+
   el.appendChild(b);
  });
 
- const add=document.createElement("button");
- add.className="city";
- add.textContent="+ Новый город";
+ const add=document.createElement('button');
+
+ add.className='city';
+ add.textContent='+ Новый город';
  add.onclick=addCity;
+
  el.appendChild(add);
 
  populateCitySelect();
 }
 
 async function addCity(){
- let name=prompt("Название нового направления:");
+
+ const name=prompt('Название нового направления:');
 
  if(!name||!name.trim()||cities.includes(name.trim()))return;
 
- const {error}=await sb.from("destinations").insert({
+ const {error}=await sb.from('destinations').insert({
   trip_id:tripId,
   name:name.trim(),
-  emoji:"📍",
+  emoji:'📍',
   sort_order:cities.length
  });
 
  if(error){
-  alert("Не удалось добавить направление: "+error.message);
+  alert('Не удалось добавить направление:\n'+error.message);
   return;
  }
 
  await loadData();
+
  activeCity=name.trim();
+
  renderCities();
  renderPlaces();
 }
 
 function populateCitySelect(){
- $("city").innerHTML=cities.map(c=>
+
+ $('city').innerHTML=cities.map(c=>
   `<option>${escapeHtml(c)}</option>`
- ).join("");
+ ).join('');
 }
 
-/* МЕСТА */
+/* ===============================
+   ОТОБРАЖЕНИЕ МЕСТ
+================================ */
+
 function renderPlaces(){
- const list=$("list");
 
- let filtered=places.filter(p=>activeCity==="Все"||p.city===activeCity);
+ const list=$('list');
 
- if(activeFilter==="want")filtered=filtered.filter(p=>p.status==="want");
- if(activeFilter==="visited")filtered=filtered.filter(p=>p.status==="visited");
+ let filtered=places.filter(p=>
+  activeCity==='Все'||p.city===activeCity
+ );
 
- const q=$("search").value.toLowerCase();
+ if(activeFilter==='want')
+  filtered=filtered.filter(p=>p.status==='want');
+
+ if(activeFilter==='visited')
+  filtered=filtered.filter(p=>p.status==='visited');
+
+ const q=$('search').value.toLowerCase();
 
  filtered=filtered.filter(p=>
-  (p.name+" "+p.notes+" "+p.city).toLowerCase().includes(q)
+  (p.name+' '+p.notes+' '+p.city).toLowerCase().includes(q)
  );
 
  if(!filtered.length){
-  list.innerHTML='<div class="empty">✨<br><br>Здесь пока нет мест.<br>Добавьте первое приключение!</div>';
+
+  list.innerHTML=
+   '<div class="empty">✨<br><br>Здесь пока нет мест.<br>Добавьте первое приключение!</div>';
+
   return;
  }
 
- list.innerHTML="";
+ list.innerHTML='';
 
  filtered.forEach(p=>{
-  const card=document.createElement("div");
-  card.className="card";
 
-  const photo=p.photo?
-   `<div class="photo"><img src="${safeUrl(p.photo)}" alt=""></div>`:
-   `<div class="photo">📷 Фото места</div>`;
+  const card=document.createElement('div');
+  card.className='card';
+
+  const photo=p.photo
+   ?`<div class="photo"><img src="${safeUrl(p.photo)}"></div>`
+   :`<div class="photo">📷 Фото места</div>`;
 
   card.innerHTML=`
    ${photo}
    <div class="card-content">
     <div class="card-top">
      <div class="card-title">${escapeHtml(p.name)}</div>
-     <span class="badge">${p.status==="visited"?"✓ Были":"❤️ Хочу"}</span>
+     <span class="badge">${p.status==='visited'?'✓ Были':'❤️ Хочу'}</span>
     </div>
     <div class="note">${escapeHtml(p.city)}</div>
-    ${p.notes?`<div class="note">${escapeHtml(p.notes)}</div>`:""}
+    ${p.notes?`<div class="note">${escapeHtml(p.notes)}</div>`:''}
     <div class="links">
-     ${p.location?`<a class="link" href="${safeUrl(p.location)}" target="_blank" rel="noopener">📍 Локация</a>`:""}
-     ${p.website?`<a class="link" href="${safeUrl(p.website)}" target="_blank" rel="noopener">🔗 Ссылка</a>`:""}
+     ${p.location?`<a class="link" href="${safeUrl(p.location)}" target="_blank" rel="noopener">📍 Локация</a>`:''}
+     ${p.website?`<a class="link" href="${safeUrl(p.website)}" target="_blank" rel="noopener">🔗 Ссылка</a>`:''}
     </div>
     <div class="card-actions">
-     <button class="action ${p.status==="visited"?"visited":""}" onclick="toggleVisited('${p.id}')">
-      ${p.status==="visited"?"✓ Мы были здесь":"☑ Отметить посещение"}
+     <button class="action ${p.status==='visited'?'visited':''}"
+      onclick="toggleVisited('${p.id}')">
+      ${p.status==='visited'?'✓ Мы были здесь':'☑ Отметить посещение'}
      </button>
      <button class="action" onclick="editPlace('${p.id}')">✏️ Изменить</button>
      <button class="action delete" onclick="deletePlace('${p.id}')">🗑</button>
@@ -574,180 +809,40 @@ function renderPlaces(){
  });
 }
 
-/* МОДАЛЬНОЕ ОКНО */
+/* ===============================
+   МОДАЛЬНОЕ ОКНО
+================================ */
+
 function openModal(){
+
  editingId=null;
  currentPhotoFile=null;
- currentPhotoUrl="";
+ currentPhotoUrl='';
 
- $("placeForm").reset();
- $("placeId").value="";
- $("modalTitle").textContent="Добавить место";
- $("preview").style.display="none";
+ $('placeForm').reset();
+ $('placeId').value='';
+ $('modalTitle').textContent='Добавить место';
+ $('preview').style.display='none';
 
  populateCitySelect();
- $("city").value=activeCity==="Все"?cities[0]:activeCity;
 
- $("modal").classList.add("open");
+ $('city').value=activeCity==='Все'?cities[0]:activeCity;
+
+ $('modal').classList.add('open');
 }
 
 function closeModal(){
- $("modal").classList.remove("open");
+ $('modal').classList.remove('open');
 }
 
-$("photo").addEventListener("change",e=>{
+$('photo').addEventListener('change',e=>{
+
  const f=e.target.files[0];
+
  if(!f)return;
 
  currentPhotoFile=f;
 
- const prev=$("preview");
- prev.src=URL.createObjectURL(f);
- prev.style.display="block";
-});
+ const prev=$('preview');
 
-/* ФОТО */
-async function uploadPhoto(file,placeId){
- if(!file)return currentPhotoUrl||"";
-
- const ext=(file.name.split(".").pop()||"jpg")
-  .toLowerCase().replace(/[^a-z0-9]/g,"");
-
- const path=`${tripId}/${placeId}/${Date.now()}.${ext||"jpg"}`;
-
- const {error}=await sb.storage.from("travel-photos")
-  .upload(path,file,{upsert:false,contentType:file.type||"image/jpeg"});
-
- if(error)throw error;
-
- const {error:metaError}=await sb.from("place_photos").insert({
-  place_id:placeId,
-  storage_path:path,
-  created_by:user.id
- });
-
- if(metaError)throw metaError;
-
- const {data}=await sb.storage.from("travel-photos")
-  .createSignedUrl(path,3600);
-
- return data?.signedUrl||"";
-}
-
-/* СОХРАНЕНИЕ */
-$("placeForm").addEventListener("submit",async e=>{
- e.preventDefault();
-
- const id=editingId||crypto.randomUUID();
- const city=$("city").value;
-
- const {data:dest,error:destErr}=await sb.from("destinations")
-  .select("id").eq("trip_id",tripId).eq("name",city).single();
-
- if(destErr||!dest){
-  alert("Не найдено направление. Обновите список.");
-  return;
- }
-
- const p={
-  id,
-  name:$("name").value.trim(),
-  city,
-  location:$("location").value.trim(),
-  website:$("website").value.trim(),
-  notes:$("notes").value.trim(),
-  status:$("status").value,
-  photo:currentPhotoUrl
- };
-
- const db=toDb(p,dest.id);
- let result;
-
- if(editingId){
-  delete db.created_by;
-  result=await sb.from("places").update(db).eq("id",id).eq("trip_id",tripId);
- }else{
-  result=await sb.from("places").insert(db);
- }
-
- if(result.error){
-  alert("Ошибка сохранения: "+result.error.message);
-  return;
- }
-
- if(currentPhotoFile){
-  try{
-   await uploadPhoto(currentPhotoFile,id);
-  }catch(err){
-   alert("Место сохранено, но фото не загрузилось: "+err.message);
-  }
- }
-
- closeModal();
- await loadData();
-});
-
-/* РЕДАКТИРОВАНИЕ */
-function editPlace(id){
- const p=places.find(x=>x.id===id);
- if(!p)return;
-
- editingId=id;
- currentPhotoUrl=p.photo||"";
- currentPhotoFile=null;
-
- populateCitySelect();
-
- $("modalTitle").textContent="Редактировать место";
- $("name").value=p.name;
- $("city").value=p.city;
- $("location").value=p.location||"";
- $("website").value=p.website||"";
- $("notes").value=p.notes||"";
- $("status").value=p.status;
-
- const preview=$("preview");
-
- if(p.photo){
-  preview.src=p.photo;
-  preview.style.display="block";
- }else{
-  preview.style.display="none";
- }
-
- $("modal").classList.add("open");
-}
-
-/* ПОСЕЩЕНИЕ */
-async function toggleVisited(id){
- const p=places.find(x=>x.id===id);
- if(!p)return;
-
- const status=p.status==="visited"?"want":"visited";
-
- const {error}=await sb.from("places")
-  .update({status}).eq("id",id).eq("trip_id",tripId);
-
- if(error){
-  alert(error.message);
-  return;
- }
-
- await loadData();
-}
-
-/* УДАЛЕНИЕ */
-async function deletePlace(id){
- if(!confirm("Удалить это место?"))return;
-
- const {data:photos}=await sb.from("place_photos")
-  .select("storage_path").eq("place_id",id);
-
- if(photos?.length){
-  await sb.storage.from("travel-photos")
-   .remove(photos.map(x=>x.storage_path));
-
-  await sb.from("place_photos").delete().eq("place_id",id);
- }
-
- con
+ prev.src=URL.c
