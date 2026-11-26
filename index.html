@@ -1,292 +1,49 @@
-
 <!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Our Travel Book</title>
+<html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Our Travel Book</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*{box-sizing:border-box}
-:root{
-  --bg:#f7f5f0;--card:#fff;--text:#26352f;--muted:#84918a;
-  --green:#597c68;--light:#e8eee8;--accent:#d7a77c;
-}
-body{margin:0;background:var(--bg);color:var(--text);
-font-family:system-ui,-apple-system,sans-serif}
-header{padding:28px 20px 20px;background:#e9eee7}
-.logo{font-size:12px;letter-spacing:3px;color:var(--green);font-weight:700}
-h1{font-size:28px;margin:8px 0 5px;font-weight:650}
-.subtitle{font-size:14px;color:var(--muted)}
-.container{max-width:750px;margin:auto;padding:18px}
-.section-title{font-size:18px;font-weight:700;margin:20px 0 12px}
-.cities{display:flex;gap:9px;overflow:auto;padding-bottom:8px}
-.city{
-border:1px solid #dce3dc;background:white;padding:11px 16px;border-radius:24px;
-white-space:nowrap;font-size:14px;cursor:pointer
-}
-.city.active{background:var(--green);color:white;border-color:var(--green)}
-.toolbar{display:flex;gap:8px;margin:15px 0}
-.search{flex:1;min-width:0;border:1px solid #e1e5df;border-radius:12px;padding:12px;font-size:15px}
-.add-btn{border:none;background:var(--green);color:white;border-radius:12px;padding:12px 16px;font-weight:600}
-.filters{display:flex;gap:8px;margin-bottom:15px}
-.filter{border:none;background:#e9ece7;border-radius:20px;padding:9px 13px;color:#53645a}
-.filter.active{background:#597c68;color:white}
-.card{background:white;border-radius:18px;overflow:hidden;margin-bottom:14px;
-box-shadow:0 3px 15px rgba(40,60,40,.04)}
-.photo{height:180px;background:#e9eee7;display:flex;align-items:center;justify-content:center;
-color:#9ba79e;font-size:14px;position:relative;overflow:hidden}
-.photo img{width:100%;height:100%;object-fit:cover}
-.card-content{padding:15px}
-.card-top{display:flex;justify-content:space-between;gap:10px}
-.card-title{font-size:18px;font-weight:700}
-.badge{font-size:12px;background:#f1f3ee;border-radius:15px;padding:5px 9px;color:#66786b}
-.note{font-size:14px;color:#66736b;margin:9px 0;white-space:pre-wrap}
-.links{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.link{font-size:13px;color:var(--green);text-decoration:none;background:#edf2ed;padding:8px 10px;border-radius:9px}
-.card-actions{display:flex;gap:8px;margin-top:13px}
-.action{flex:1;border:1px solid #dce3dc;background:white;border-radius:10px;padding:10px;font-size:13px}
-.action.visited{background:#e4eee6;color:#456b53;border-color:#c6dccb}
-.delete{color:#a45e58}
-.empty{text-align:center;padding:40px 20px;color:var(--muted)}
-.modal{display:none;position:fixed;inset:0;background:rgba(20,30,25,.45);z-index:10;overflow:auto}
-.modal.open{display:block}
-.modal-box{background:var(--bg);margin:20px auto;max-width:600px;min-height:100vh;padding:22px;border-radius:20px}
-.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-.close{border:none;background:#e7ebe5;border-radius:50%;width:38px;height:38px;font-size:22px}
-label{display:block;font-size:13px;color:#68776d;margin:14px 0 6px}
-input,textarea,select{width:100%;padding:12px;border:1px solid #dce3dc;border-radius:11px;font-size:15px;background:white}
-textarea{min-height:90px;resize:vertical}
-.save{width:100%;margin-top:20px;border:none;background:var(--green);color:white;padding:15px;border-radius:13px;font-size:16px;font-weight:700}
-.preview{max-height:150px;object-fit:cover;border-radius:12px;margin-top:10px;display:none;width:100%}
-@media(min-width:600px){.card-list{display:grid;grid-template-columns:1fr 1fr;gap:14px}.card{margin:0}}
-</style>
-</head>
-<body>
-<header>
-  <div class="logo">✦ OUR TRAVEL BOOK</div>
-  <h1>Наше путешествие</h1>
-  <div class="subtitle">Места, впечатления и маленькие приключения ❤️</div>
-</header>
-
+*{box-sizing:border-box} :root{--bg:#f7f5f0;--card:#fff;--text:#26352f;--muted:#84918a;--green:#597c68;--light:#e8eee8;--accent:#d7a77c}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif}header{padding:25px 20px 18px;background:#e9eee7}.logo{font-size:12px;letter-spacing:3px;color:var(--green);font-weight:700}h1{font-size:27px;margin:8px 0 5px;font-weight:650}.subtitle{font-size:14px;color:var(--muted)}.container{max-width:750px;margin:auto;padding:18px}.section-title{font-size:18px;font-weight:700;margin:20px 0 12px}.cities{display:flex;gap:9px;overflow:auto;padding-bottom:8px}.city{border:1px solid #dce3dc;background:white;padding:11px 16px;border-radius:24px;white-space:nowrap;font-size:14px;cursor:pointer}.city.active{background:var(--green);color:white;border-color:var(--green)}.toolbar{display:flex;gap:8px;margin:15px 0}.search{flex:1;min-width:0;border:1px solid #e1e5df;border-radius:12px;padding:12px;font-size:15px}.add-btn,.primary{border:none;background:var(--green);color:white;border-radius:12px;padding:12px 16px;font-weight:600}.filters{display:flex;gap:8px;margin-bottom:15px}.filter{border:none;background:#e9ece7;border-radius:20px;padding:9px 13px;color:#53645a}.filter.active{background:var(--green);color:white}.card{background:white;border-radius:18px;overflow:hidden;margin-bottom:14px;box-shadow:0 3px 15px rgba(40,60,40,.04)}.photo{height:180px;background:#e9eee7;display:flex;align-items:center;justify-content:center;color:#9ba79e;font-size:14px;overflow:hidden}.photo img{width:100%;height:100%;object-fit:cover}.card-content{padding:15px}.card-top{display:flex;justify-content:space-between;gap:10px}.card-title{font-size:18px;font-weight:700}.badge{font-size:12px;background:#f1f3ee;border-radius:15px;padding:5px 9px;color:#66786b}.note{font-size:14px;color:#66736b;margin:9px 0;white-space:pre-wrap}.links{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.link{font-size:13px;color:var(--green);text-decoration:none;background:#edf2ed;padding:8px 10px;border-radius:9px}.card-actions{display:flex;gap:7px;margin-top:13px}.action{flex:1;border:1px solid #dce3dc;background:white;border-radius:10px;padding:9px 5px;font-size:12px}.action.visited{background:#e4eee6;color:#456b53;border-color:#c6dccb}.delete{color:#a45e58}.empty{text-align:center;padding:40px 20px;color:var(--muted)}.modal{display:none;position:fixed;inset:0;background:rgba(20,30,25,.45);z-index:10;overflow:auto}.modal.open{display:block}.modal-box{background:var(--bg);margin:20px auto;max-width:600px;min-height:100vh;padding:22px;border-radius:20px}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.close{border:none;background:#e7ebe5;border-radius:50%;width:38px;height:38px;font-size:22px}label{display:block;font-size:13px;color:#68776d;margin:14px 0 6px}input,textarea,select{width:100%;padding:12px;border:1px solid #dce3dc;border-radius:11px;font-size:15px;background:white}textarea{min-height:90px;resize:vertical}.save{width:100%;margin-top:20px;border:none;background:var(--green);color:white;padding:15px;border-radius:13px;font-size:16px;font-weight:700}.preview{max-height:150px;object-fit:cover;border-radius:12px;margin-top:10px;display:none;width:100%}.auth-wrap{max-width:500px;margin:22px auto;padding:20px;background:white;border-radius:18px}.msg{padding:12px;border-radius:10px;background:#f1f3ee;margin:12px 0;font-size:14px}.small{font-size:12px;color:var(--muted)}.hidden{display:none!important}.topline{display:flex;justify-content:space-between;align-items:center;gap:8px}.topline button{font-size:12px;padding:8px 10px}.invitebox{background:#fff;border-radius:15px;padding:14px;margin:12px 0}.invitecode{font-size:24px;letter-spacing:3px;font-weight:700;text-align:center;padding:8px}.statusline{font-size:13px;color:var(--muted);margin:8px 0}@media(min-width:600px){.card-list{display:grid;grid-template-columns:1fr 1fr;gap:14px}.card{margin:0}}
+</style></head><body>
+<header><div class="logo">✦ OUR TRAVEL BOOK</div><h1>Наше путешествие</h1><div class="subtitle">Места, впечатления и маленькие приключения ❤️</div></header>
 <div class="container">
-  <div class="section-title">Наши направления</div>
-  <div class="cities" id="cities"></div>
-
-  <div class="toolbar">
-    <input class="search" id="search" placeholder="🔎 Найти место..." />
-    <button class="add-btn" onclick="openModal()">＋ Добавить</button>
-  </div>
-
-  <div class="filters">
-    <button class="filter active" data-filter="all">Все</button>
-    <button class="filter" data-filter="want">❤️ Хочу</button>
-    <button class="filter" data-filter="visited">✓ Были</button>
-  </div>
-
-  <div id="list" class="card-list"></div>
-</div>
-
-<div class="modal" id="modal">
-<div class="modal-box">
-  <div class="modal-head">
-    <h2 id="modalTitle">Добавить место</h2>
-    <button class="close" onclick="closeModal()">×</button>
-  </div>
-
-  <form id="placeForm">
-    <input type="hidden" id="placeId">
-
-    <label>Название места *</label>
-    <input id="name" required placeholder="Например: красивый пляж">
-
-    <label>Город / направление *</label>
-    <select id="city"></select>
-
-    <label>Фото</label>
-    <input id="photo" type="file" accept="image/*">
-    <img id="preview" class="preview">
-
-    <label>Локация / ссылка на карту</label>
-    <input id="location" placeholder="Google Maps, координаты или адрес">
-
-    <label>Сайт / Instagram / другая ссылка</label>
-    <input id="website" placeholder="https://...">
-
-    <label>Наши заметки</label>
-    <textarea id="notes" placeholder="Что хотим увидеть? Что важно? Цена, советы..."></textarea>
-
-    <label>Статус</label>
-    <select id="status">
-      <option value="want">❤️ Хочу посетить</option>
-      <option value="visited">✓ Мы здесь были!</option>
-    </select>
-
-    <button class="save" type="submit">Сохранить место</button>
-  </form>
-</div>
-</div>
-
+<div id="auth" class="auth-wrap"><h2>Наш общий дневник путешествий</h2><p>Войдите или создайте аккаунт, чтобы ваши места сохранялись в облаке.</p><label>Email</label><input id="email" type="email" placeholder="your@email.com"><label>Пароль</label><input id="password" type="password" placeholder="Не менее 6 символов"><button class="primary" style="width:100%;margin-top:12px" onclick="signInUp('signin')">Войти</button><button class="primary" style="width:100%;margin-top:8px;background:#8a9b8f" onclick="signInUp('signup')">Создать аккаунт</button><div id="authmsg" class="msg hidden"></div></div>
+<div id="tripSetup" class="auth-wrap hidden"><h2>Создаём вашу общую поездку</h2><p>Если вы создаёте новую поездку, она станет вашим общим пространством.</p><label>Название поездки</label><input id="tripName" value="Таиланд 2026–2027"><label>Дата начала (необязательно)</label><input id="tripStart" type="date"><label>Дата окончания (необязательно)</label><input id="tripEnd" type="date"><button class="primary" style="width:100%;margin-top:12px" onclick="createTrip()">Создать поездку</button><label>Если муж уже создал поездку — введите код приглашения</label><input id="joinCode" placeholder="Код приглашения"><button class="primary" style="width:100%;margin-top:8px;background:#8a9b8f" onclick="joinTrip()">Присоединиться по коду</button><div id="setupmsg" class="msg hidden"></div></div>
+<div id="app" class="hidden"><div class="topline"><div class="statusline" id="statusline">Облако подключено ☁️</div><button class="action" onclick="logout()">Выйти</button></div><div class="invitebox"><div><b>Поделиться поездкой с мужем</b></div><button class="primary" style="width:100%;margin-top:9px" onclick="makeInvite()">Создать код приглашения</button><div id="inviteCode" class="invitecode"></div><div class="small" id="inviteInfo">Код можно отправить мужу. Он войдёт/создаст аккаунт и присоединится.</div></div>
+<div class="section-title">Наши направления</div><div class="cities" id="cities"></div><div class="toolbar"><input class="search" id="search" placeholder="🔎 Найти место..."><button class="add-btn" onclick="openModal()">＋ Добавить</button></div><div class="filters"><button class="filter active" data-filter="all">Все</button><button class="filter" data-filter="want">❤️ Хочу</button><button class="filter" data-filter="visited">✓ Были</button></div><div id="list" class="card-list"></div></div></div>
+<div class="modal" id="modal"><div class="modal-box"><div class="modal-head"><h2 id="modalTitle">Добавить место</h2><button class="close" onclick="closeModal()">×</button></div><form id="placeForm"><input type="hidden" id="placeId"><label>Название места *</label><input id="name" required placeholder="Например: красивый пляж"><label>Город / направление *</label><select id="city"></select><label>Фото</label><input id="photo" type="file" accept="image/*"><img id="preview" class="preview"><label>Локация / ссылка на карту</label><input id="location" placeholder="Google Maps, координаты или адрес"><label>Сайт / Instagram / другая ссылка</label><input id="website" placeholder="https://..."><label>Наши заметки</label><textarea id="notes" placeholder="Что хотим увидеть? Что важно? Цена, советы..."></textarea><label>Статус</label><select id="status"><option value="want">❤️ Хочу посетить</option><option value="visited">✓ Мы здесь были!</option></select><button class="save" type="submit">Сохранить место</button></form></div></div>
 <script>
-const initialCities=["Бангкок","Као Лак","Ко Яо Яй","Патонг","Най Харн","Най Янг"];
-let cities=JSON.parse(localStorage.getItem("travelCities")||"null")||initialCities;
-let places=JSON.parse(localStorage.getItem("travelPlaces")||"[]");
-let activeCity="Все";
-let activeFilter="all";
-let editingId=null;
-let currentPhoto="";
-
-function saveData(){
- localStorage.setItem("travelCities",JSON.stringify(cities));
- localStorage.setItem("travelPlaces",JSON.stringify(places));
-}
-
-function renderCities(){
- const el=document.getElementById("cities");
- el.innerHTML="";
- ["Все",...cities].forEach(c=>{
-  const b=document.createElement("button");
-  b.className="city"+(activeCity===c?" active":"");
-  b.textContent=c;
-  b.onclick=()=>{activeCity=c;renderCities();renderPlaces()};
-  el.appendChild(b);
- });
- const add=document.createElement("button");
- add.className="city";
- add.textContent="+ Новый город";
- add.onclick=()=>{
-  const c=prompt("Название нового направления:");
-  if(c&&c.trim()&&!cities.includes(c.trim())){
-   cities.push(c.trim());activeCity=c.trim();saveData();renderCities();renderPlaces();
-  }
- };
- el.appendChild(add);
-}
-
-function renderPlaces(){
- const list=document.getElementById("list");
- let filtered=places.filter(p=>(activeCity==="Все"||p.city===activeCity));
- if(activeFilter==="want")filtered=filtered.filter(p=>p.status==="want");
- if(activeFilter==="visited")filtered=filtered.filter(p=>p.status==="visited");
- const q=document.getElementById("search").value.toLowerCase();
- filtered=filtered.filter(p=>(p.name+" "+p.notes+" "+p.city).toLowerCase().includes(q));
-
- if(!filtered.length){
-  list.innerHTML='<div class="empty">✨<br><br>Здесь пока нет мест.<br>Добавьте первое приключение!</div>';
-  return;
- }
- list.innerHTML="";
- filtered.forEach(p=>{
-  const card=document.createElement("div");card.className="card";
-  const photo=p.photo?`<div class="photo"><img src="${p.photo}"></div>`:`<div class="photo">📷 Фото места</div>`;
-  card.innerHTML=`
-   ${photo}
-   <div class="card-content">
-    <div class="card-top">
-     <div class="card-title">${escapeHtml(p.name)}</div>
-     <span class="badge">${p.status==="visited"?"✓ Были":"❤️ Хочу"}</span>
-    </div>
-    <div class="note">${escapeHtml(p.city)}</div>
-    ${p.notes?`<div class="note">${escapeHtml(p.notes)}</div>`:""}
-    <div class="links">
-     ${p.location?`<a class="link" href="${safeUrl(p.location)}" target="_blank">📍 Локация</a>`:""}
-     ${p.website?`<a class="link" href="${safeUrl(p.website)}" target="_blank">🔗 Ссылка</a>`:""}
-    </div>
-    <div class="card-actions">
-     <button class="action ${p.status==="visited"?"visited":""}" onclick="toggleVisited('${p.id}')">${p.status==="visited"?"✓ Мы были здесь":"☑ Отметить посещение"}</button>
-     <button class="action" onclick="editPlace('${p.id}')">✏️ Изменить</button>
-     <button class="action delete" onclick="deletePlace('${p.id}')">🗑</button>
-    </div>
-   </div>`;
-  list.appendChild(card);
- });
-}
-
-function escapeHtml(s){
- return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
-}
-function safeUrl(s){
- let url=String(s||"").trim();
- if(!/^https?:\/\//i.test(url))url="https://"+url;
- return url.replace(/"/g,"%22");
-}
-function openModal(){
- editingId=null;currentPhoto="";
- document.getElementById("placeForm").reset();
- document.getElementById("placeId").value="";
- document.getElementById("modalTitle").textContent="Добавить место";
- document.getElementById("preview").style.display="none";
- populateCitySelect();
- document.getElementById("city").value=activeCity==="Все"?cities[0]:activeCity;
- document.getElementById("modal").classList.add("open");
-}
-function closeModal(){document.getElementById("modal").classList.remove("open")}
-function populateCitySelect(){
- const sel=document.getElementById("city");
- sel.innerHTML=cities.map(c=>`<option>${escapeHtml(c)}</option>`).join("");
-}
-document.getElementById("photo").addEventListener("change",e=>{
- const file=e.target.files[0];
- if(!file)return;
- const reader=new FileReader();
- reader.onload=()=>{
-  currentPhoto=reader.result;
-  const preview=document.getElementById("preview");
-  preview.src=currentPhoto;preview.style.display="block";
- };
- reader.readAsDataURL(file);
-});
-document.getElementById("placeForm").addEventListener("submit",e=>{
- e.preventDefault();
- const p={
-  id:editingId||Date.now().toString(),
-  name:document.getElementById("name").value.trim(),
-  city:document.getElementById("city").value,
-  photo:currentPhoto,
-  location:document.getElementById("location").value.trim(),
-  website:document.getElementById("website").value.trim(),
-  notes:document.getElementById("notes").value.trim(),
-  status:document.getElementById("status").value
- };
- if(editingId){
-  const i=places.findIndex(x=>x.id===editingId);
-  if(i>=0)places[i]=p;
- }else places.unshift(p);
- saveData();closeModal();renderCities();renderPlaces();
-});
-function editPlace(id){
- const p=places.find(x=>x.id===id);if(!p)return;
- editingId=id;currentPhoto=p.photo||"";
- populateCitySelect();
- document.getElementById("modalTitle").textContent="Редактировать место";
- document.getElementById("name").value=p.name;
- document.getElementById("city").value=p.city;
- document.getElementById("location").value=p.location||"";
- document.getElementById("website").value=p.website||"";
- document.getElementById("notes").value=p.notes||"";
- document.getElementById("status").value=p.status;
- const preview=document.getElementById("preview");
- if(p.photo){preview.src=p.photo;preview.style.display="block"}else preview.style.display="none";
- document.getElementById("modal").classList.add("open");
-}
-function toggleVisited(id){
- const p=places.find(x=>x.id===id);if(!p)return;
- p.status=p.status==="visited"?"want":"visited";
- saveData();renderPlaces();
-}
-function deletePlace(id){
- if(!confirm("Удалить это место?"))return;
- places=places.filter(x=>x.id!==id);saveData();renderPlaces();
-}
-document.getElementById("search").addEventListener("input",renderPlaces);
-document.querySelectorAll(".filter").forEach(b=>{
- b.onclick=()=>{
-  activeFilter=b.dataset.filter;
-  document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));
-  b.classList.add("active");renderPlaces();
- };
-});
-renderCities();renderPlaces();
-</script>
-</body>
-</html>
-  
+// ВСТАВЬ СЮДА свой Project URL и Publishable key (не Secret/Service Role key)
+const SUPABASE_URL='PASTE_PROJECT_URL_HERE';
+const SUPABASE_KEY='PASTE_PUBLISHABLE_KEY_HERE';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const initialCities=['Бангкок','Као Лак','Ко Яо Яй','Патонг','Най Харн','Най Янг'];
+let user=null,trip=null,cities=[],places=[],destinationMap={},photoMap={},activeCity='Все',activeFilter='all',editingId=null,currentPhotoFile=null,currentPhotoUrl='';
+const $=id=>document.getElementById(id);
+function showMsg(id,msg){$(id).textContent=msg;$(id).classList.remove('hidden')}
+function hideMsg(id){$(id).classList.add('hidden')}
+async function signInUp(mode){hideMsg('authmsg');const email=$('email').value.trim(),password=$('password').value;if(!email||!password){showMsg('authmsg','Введите email и пароль.');return}if(password.length<6){showMsg('authmsg','Пароль должен быть не короче 6 символов.');return}let r=mode==='signup'?await sb.auth.signUp({email,password}):await sb.auth.signInWithPassword({email,password});if(r.error){showMsg('authmsg',r.error.message);return}if(mode==='signup'&&!r.data.session){showMsg('authmsg','Аккаунт создан. Если включено подтверждение email, подтвердите почту, затем войдите.');return}user=r.data.user;await afterAuth()}
+async function afterAuth(){ $('auth').classList.add('hidden');const {data,error}=await sb.from('trip_members').select('trip_id').eq('user_id',user.id);if(error){showMsg('setupmsg','Не удалось прочитать список поездок: '+error.message);$('tripSetup').classList.remove('hidden');return}if(data&&data.length){tripId=data[0].trip_id;await loadTrip()}else $('tripSetup').classList.remove('hidden')}
+let tripId=null;
+async function createTrip(){hideMsg('setupmsg');let name=$('tripName').value.trim()||'Наше путешествие';let row={name};if($('tripStart').value)row.start_date=$('tripStart').value;if($('tripEnd').value)row.end_date=$('tripEnd').value;row.created_by=user.id;const {data,error}=await sb.from('trips').insert(row).select().single();if(error){showMsg('setupmsg','Ошибка создания поездки: '+error.message+' — возможно, нужна проверка структуры таблицы/политик.');return}tripId=data.id;await loadTrip()}
+async function joinTrip(){hideMsg('setupmsg');let code=$('joinCode').value.trim();if(!code){showMsg('setupmsg','Введите код приглашения.');return}let {data,error}=await sb.rpc('join_trip_by_code',{invite_code:code});if(error){showMsg('setupmsg','Не получилось присоединиться: '+error.message);return}tripId=data;await loadTrip()}
+async function loadTrip(){const {data:t,error:te}=await sb.from('trips').select('*').eq('id',tripId).single();if(te){showMsg('setupmsg','Не удалось загрузить поездку: '+te.message);$('tripSetup').classList.remove('hidden');return}trip=t;$('tripSetup').classList.add('hidden');$('app').classList.remove('hidden');$('statusline').textContent='Общее облачное пространство ☁️';await loadData()}
+async function loadData(){const {data:d,error:de}=await sb.from('destinations').select('*').eq('trip_id',tripId).order('sort_order');if(de){$('statusline').textContent='Ошибка направлений: '+de.message;return}cities=(d||[]).map(x=>x.name);destinationMap=Object.fromEntries((d||[]).map(x=>[x.id,x.name]));if(!cities.length){for(let i=0;i<initialCities.length;i++){let {error}=await sb.from('destinations').insert({trip_id:tripId,name:initialCities[i],emoji:'📍',sort_order:i});if(error){$('statusline').textContent='Ошибка создания направлений: '+error.message;return}}const {data:nd}=await sb.from('destinations').select('*').eq('trip_id',tripId).order('sort_order');cities=(nd||[]).map(x=>x.name);destinationMap=Object.fromEntries((nd||[]).map(x=>[x.id,x.name]))}const {data:p,error:pe}=await sb.from('places').select('*').eq('trip_id',tripId).order('created_at',{ascending:false});if(pe){$('statusline').textContent='Ошибка мест: '+pe.message;return}const {data:ph,error:phe}=await sb.from('place_photos').select('place_id,storage_path,created_at').order('created_at',{ascending:false});if(phe){$('statusline').textContent='Ошибка фотографий: '+phe.message;return}photoMap={};for(const item of (ph||[])){if(!photoMap[item.place_id]){const {data:signed}=await sb.storage.from('travel-photos').createSignedUrl(item.storage_path,3600);photoMap[item.place_id]=signed?.signedUrl||''}}places=(p||[]).map(fromDb);renderCities();renderPlaces()}
+function fromDb(p){return{id:p.id,name:p.name,city:destinationMap[p.destination_id]||'',destination_id:p.destination_id,photo:photoMap[p.id]||'',location:p.location_url||'',website:p.website_url||'',notes:p.notes||'',status:p.status||'want',category:p.category||''}}
+function toDb(p,destId){return{trip_id:tripId,destination_id:destId,name:p.name,category:p.category||null,location_url:p.location||null,website_url:p.website||null,notes:p.notes||null,status:p.status,created_by:user.id}}
+function renderCities(){const el=$('cities');el.innerHTML='';['Все',...cities].forEach(c=>{const b=document.createElement('button');b.className='city'+(activeCity===c?' active':'');b.textContent=c;b.onclick=()=>{activeCity=c;renderCities();renderPlaces()};el.appendChild(b)});const add=document.createElement('button');add.className='city';add.textContent='+ Новый город';add.onclick=addCity;el.appendChild(add);populateCitySelect()}
+async function addCity(){let name=prompt('Название нового направления:');if(!name||!name.trim()||cities.includes(name.trim()))return;let {error}=await sb.from('destinations').insert({trip_id:tripId,name:name.trim(),emoji:'📍',sort_order:cities.length});if(error){alert('Не удалось добавить направление: '+error.message);return}await loadData();activeCity=name.trim();renderCities();renderPlaces()}
+function populateCitySelect(){const sel=$('city');sel.innerHTML=cities.map(c=>`<option>${escapeHtml(c)}</option>`).join('')}
+function renderPlaces(){const list=$('list');let filtered=places.filter(p=>activeCity==='Все'||p.city===activeCity);if(activeFilter==='want')filtered=filtered.filter(p=>p.status==='want');if(activeFilter==='visited')filtered=filtered.filter(p=>p.status==='visited');let q=$('search').value.toLowerCase();filtered=filtered.filter(p=>(p.name+' '+p.notes+' '+p.city).toLowerCase().includes(q));if(!filtered.length){list.innerHTML='<div class="empty">✨<br><br>Здесь пока нет мест.<br>Добавьте первое приключение!</div>';return}list.innerHTML='';filtered.forEach(p=>{const card=document.createElement('div');card.className='card';const photo=p.photo?`<div class="photo"><img src="${safeUrl(p.photo)}" alt=""></div>`:`<div class="photo">📷 Фото места</div>`;card.innerHTML=`${photo}<div class="card-content"><div class="card-top"><div class="card-title">${escapeHtml(p.name)}</div><span class="badge">${p.status==='visited'?'✓ Были':'❤️ Хочу'}</span></div><div class="note">${escapeHtml(p.city)}</div>${p.notes?`<div class="note">${escapeHtml(p.notes)}</div>`:''}<div class="links">${p.location?`<a class="link" href="${safeUrl(p.location)}" target="_blank" rel="noopener">📍 Локация</a>`:''}${p.website?`<a class="link" href="${safeUrl(p.website)}" target="_blank" rel="noopener">🔗 Ссылка</a>`:''}</div><div class="card-actions"><button class="action ${p.status==='visited'?'visited':''}" onclick="toggleVisited('${p.id}')">${p.status==='visited'?'✓ Мы были здесь':'☑ Отметить посещение'}</button><button class="action" onclick="editPlace('${p.id}')">✏️ Изменить</button><button class="action delete" onclick="deletePlace('${p.id}')">🗑</button></div></div>`;list.appendChild(card)})}
+function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}function safeUrl(s){let u=String(s||'').trim();if(!/^https?:\/\//i.test(u))u='https://'+u;return u.replace(/"/g,'%22')}
+function openModal(){editingId=null;currentPhotoFile=null;currentPhotoUrl='';$('placeForm').reset();$('placeId').value='';$('modalTitle').textContent='Добавить место';$('preview').style.display='none';populateCitySelect();$('city').value=activeCity==='Все'?cities[0]:activeCity;$('modal').classList.add('open')}function closeModal(){$('modal').classList.remove('open')}
+$('photo').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;currentPhotoFile=f;const prev=$('preview');prev.src=URL.createObjectURL(f);prev.style.display='block'});
+async function uploadPhoto(file,placeId){if(!file)return currentPhotoUrl||'';const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');const path=`${tripId}/${placeId}/${Date.now()}.${ext||'jpg'}`;const {error}=await sb.storage.from('travel-photos').upload(path,file,{upsert:false,contentType:file.type||'image/jpeg'});if(error)throw error;const {error:metaError}=await sb.from('place_photos').insert({place_id:placeId,storage_path:path,created_by:user.id});if(metaError)throw metaError;const {data}=await sb.storage.from('travel-photos').createSignedUrl(path,3600);return data?.signedUrl||''}
+$('placeForm').addEventListener('submit',async e=>{e.preventDefault();const id=editingId||crypto.randomUUID();const city=$('city').value;const {data:dest,error:destErr}=await sb.from('destinations').select('id').eq('trip_id',tripId).eq('name',city).single();if(destErr||!dest){alert('Не найдено направление. Обновите список.');return}const p={id,name:$('name').value.trim(),city,location:$('location').value.trim(),website:$('website').value.trim(),notes:$('notes').value.trim(),status:$('status').value,photo:currentPhotoUrl};const db=toDb(p,dest.id);let result;if(editingId){delete db.created_by;result=await sb.from('places').update(db).eq('id',id).eq('trip_id',tripId)}else result=await sb.from('places').insert(db);if(result.error){alert('Ошибка сохранения: '+result.error.message);return}if(currentPhotoFile){try{await uploadPhoto(currentPhotoFile,id)}catch(err){alert('Место сохранено, но фото не загрузилось: '+err.message)}}closeModal();await loadData()});
+function editPlace(id){const p=places.find(x=>x.id===id);if(!p)return;editingId=id;currentPhotoUrl=p.photo||'';currentPhotoFile=null;populateCitySelect();$('modalTitle').textContent='Редактировать место';$('name').value=p.name;$('city').value=p.city;$('location').value=p.location||'';$('website').value=p.website||'';$('notes').value=p.notes||'';$('status').value=p.status;const preview=$('preview');if(p.photo){preview.src=p.photo;preview.style.display='block'}else preview.style.display='none';$('modal').classList.add('open')}
+async function toggleVisited(id){const p=places.find(x=>x.id===id);if(!p)return;let status=p.status==='visited'?'want':'visited';const {error}=await sb.from('places').update({status}).eq('id',id).eq('trip_id',tripId);if(error){alert(error.message);return}await loadData()}
+async function deletePlace(id){if(!confirm('Удалить это место?'))return;const {data:photos}=await sb.from('place_photos').select('storage_path').eq('place_id',id);if(photos?.length){await sb.storage.from('travel-photos').remove(photos.map(x=>x.storage_path));await sb.from('place_photos').delete().eq('place_id',id)}const {error}=await sb.from('places').delete().eq('id',id).eq('trip_id',tripId);if(error){alert('Ошибка удаления: '+error.message);return}await loadData()}
+async function makeInvite(){const {data,error}=await sb.rpc('create_trip_invite',{trip_id:tripId});if(error){alert('Не удалось создать код: '+error.message);return}$('inviteCode').textContent=data;try{await navigator.clipboard.writeText(String(data));$('inviteInfo').textContent='Код скопирован. Отправьте его мужу.'}catch{$('inviteInfo').textContent='Скопируйте код и отправьте мужу.'}}
+async function logout(){await sb.auth.signOut();location.reload()}
+$('search').addEventListener('input',renderPlaces);document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{activeFilter=b.dataset.filter;document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderPlaces()});
+sb.auth.getSession().then(async({data})=>{if(data.session){user=data.session.user;await afterAuth()}});
+</script></body></html>
