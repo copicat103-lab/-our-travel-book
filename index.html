@@ -4,10 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Our Travel Book</title>
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <style>
 :root{
@@ -18,8 +15,6 @@
   --muted:#718078;
   --line:#e6e9e4;
   --orange:#d28b54;
-  --red:#d96b60;
-  --blue:#4b8ec8;
 }
 *{box-sizing:border-box}
 body{
@@ -38,6 +33,12 @@ button.secondary,.linkbutton.secondary{
   border:1px solid var(--line)
 }
 button.small,.linkbutton.small{padding:8px 10px;font-size:13px}
+.linkbutton{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+}
 input,textarea,select{
   width:100%;border:1px solid var(--line);
   background:white;border-radius:12px;
@@ -94,6 +95,7 @@ label{
   border-radius:18px;padding:15px;margin-bottom:12px;
   box-shadow:0 3px 12px #20392a06
 }
+.place{display:flex;align-items:flex-start;gap:12px}
 .placebody{min-width:0;flex:1}
 .placebody h3{margin:0 0 5px;font-size:17px}
 .placebody p{
@@ -111,11 +113,11 @@ label{
 .modalbg{
   position:fixed;inset:0;background:#0007;
   display:flex;align-items:flex-end;
-  justify-content:center;z-index:1000
+  justify-content:center;z-index:10
 }
 .modal{
   background:var(--cream);width:100%;max-width:720px;
-  max-height:94vh;overflow:auto;
+  max-height:92vh;overflow:auto;
   border-radius:24px 24px 0 0;padding:20px
 }
 .modal h2{margin:0 0 12px}
@@ -130,65 +132,11 @@ label{
   transform:translateX(-50%);
   background:#25342d;color:white;
   padding:12px 18px;border-radius:12px;
-  z-index:2000;max-width:90%;
+  z-index:20;max-width:90%;
   box-shadow:0 5px 25px #0002
 }
 .hidden{display:none!important}
 .loading{text-align:center;padding:40px;color:var(--muted)}
-
-.tabs{
-  display:grid;grid-template-columns:1fr 1fr;
-  gap:8px;margin:18px 0
-}
-.tab{
-  background:white;color:var(--green);
-  border:1px solid var(--line)
-}
-.tab.active{
-  background:var(--green);color:white
-}
-#mainMap{
-  height:65vh;min-height:380px;
-  border-radius:18px;border:1px solid var(--line);
-  overflow:hidden
-}
-.mapnote{
-  color:var(--muted);font-size:13px;margin:10px 0
-}
-.mapfilter{
-  display:flex;gap:8px;overflow:auto;margin:12px 0
-}
-.mapfilter button{
-  background:white;color:var(--green);
-  border:1px solid var(--line);white-space:nowrap
-}
-.mapfilter button.active{
-  background:var(--orange);color:white;border-color:var(--orange)
-}
-#pickerMap{
-  height:55vh;min-height:350px;
-  border-radius:15px;overflow:hidden
-}
-.coords{
-  background:var(--green-light);
-  border-radius:12px;padding:10px;
-  font-size:13px;margin-top:10px
-}
-.linkbutton{
-  display:inline-flex;align-items:center;
-  justify-content:center;text-decoration:none
-}
-.leaflet-popup-content{
-  font-family:system-ui,sans-serif;
-  min-width:150px
-}
-.popupTitle{font-weight:700;font-size:16px;margin-bottom:5px}
-.popupText{font-size:13px;color:#66746d;margin-bottom:8px}
-.markerDot{
-  width:18px;height:18px;border-radius:50%;
-  border:3px solid white;
-  box-shadow:0 1px 5px #0005
-}
 @media(min-width:600px){
   .modalbg{align-items:center}
   .modal{border-radius:24px}
@@ -201,7 +149,6 @@ label{
 
 <script>
 const SUPABASE_URL='https://gmjfxdbefckdmiktxnpb.supabase.co';
-
 const root=document.getElementById('root');
 
 let sb=null;
@@ -209,29 +156,12 @@ let cities=[];
 let places=[];
 let activeCity='Все';
 let activeFilter='all';
-let activeView='list';
 let editingId=null;
-
-let mainMap=null;
-let pickerMap=null;
-let pickerMarker=null;
-let selectedLat=null;
-let selectedLng=null;
 
 const initialCities=[
   'Бангкок','Као Лак','Ко Яо Яй',
   'Патонг','Най Харн','Най Янг'
 ];
-
-const cityCenters={
-  'Бангкок':[13.7563,100.5018],
-  'Као Лак':[8.6413,98.2486],
-  'Ко Яо Яй':[7.9545,98.5920],
-  'Патонг':[7.8965,98.2965],
-  'Най Харн':[7.7780,98.3060],
-  'Най Янг':[8.0870,98.2990],
-  'Все':[7.9,98.4]
-};
 
 const $=id=>document.getElementById(id);
 
@@ -253,7 +183,8 @@ function safeUrl(value){
     url='https://'+url;
   }
 
-  return /^https?:\/\//i.test(url)?url:'';
+  if(!/^https?:\/\//i.test(url))return '';
+  return url;
 }
 
 function toast(message){
@@ -380,14 +311,41 @@ function render(){
     </div>
 
     <div class="content">
-      <div class="tabs">
-        <button class="tab ${activeView==='list'?'active':''}"
-          onclick="setView('list')">📋 Список</button>
-        <button class="tab ${activeView==='map'?'active':''}"
-          onclick="setView('map')">🗺️ Карта</button>
+      <div class="sectiontitle">
+        <h2>Наши направления</h2>
       </div>
 
-      ${activeView==='list'?renderListView():renderMapView()}
+      <div class="destgrid">
+        ${cityNames.map(city=>{
+          const count=city==='Все'
+            ?places.length
+            :places.filter(p=>p.travel_book_cities?.name===city).length;
+
+          return `
+          <button class="dest ${activeCity===city?'active':''}"
+            onclick="setCity('${esc(city)}')">
+            <strong>${city==='Все'?'🌍 Все направления':esc(city)}</strong>
+            <span>${count} ${count===1?'место':'мест'}</span>
+          </button>`;
+        }).join('')}
+      </div>
+
+      <div class="toolbar">
+        <input id="search" placeholder="🔎 Найти место..."
+          oninput="renderList()">
+        <button onclick="openModal()">＋ Добавить</button>
+      </div>
+
+      <div class="filters">
+        <button class="${activeFilter==='all'?'active':''}"
+          onclick="setFilter('all')">Все</button>
+        <button class="${activeFilter==='want'?'active':''}"
+          onclick="setFilter('want')">❤️ Хочу</button>
+        <button class="${activeFilter==='visited'?'active':''}"
+          onclick="setFilter('visited')">✓ Были</button>
+      </div>
+
+      <div id="list"></div>
     </div>
   </div>
 
@@ -408,22 +366,6 @@ function render(){
         <label>Локация / адрес / ссылка на карту</label>
         <input id="location" placeholder="Google Maps или адрес">
 
-        <label>Координаты на карте</label>
-        <button type="button" class="secondary" style="width:100%"
-          onclick="openPicker()">
-          📍 Выбрать точку на карте
-        </button>
-
-        <div id="coordInfo" class="coords">
-          Точка на карте не выбрана
-        </div>
-
-        <button type="button" class="secondary small"
-          style="margin-top:8px"
-          onclick="clearCoords()">
-          Удалить выбранные координаты
-        </button>
-
         <label>Сайт / Instagram / другая ссылка</label>
         <input id="external" placeholder="https://...">
 
@@ -439,134 +381,26 @@ function render(){
         <button class="save" type="submit">Сохранить место</button>
       </form>
     </div>
-  </div>
-
-  <div id="pickerbg" class="modalbg hidden">
-    <div class="modal">
-      <div class="modalhead">
-        <h2>📍 Выбрать точку</h2>
-        <button class="close" onclick="closePicker()">×</button>
-      </div>
-
-      <p class="mapnote">
-        Нажми на нужное место на карте. Маркер можно перемещать.
-      </p>
-
-      <div id="pickerMap"></div>
-
-      <div id="pickerCoords" class="coords">
-        Нажми на карту, чтобы выбрать координаты
-      </div>
-
-      <button class="save" onclick="confirmCoords()">
-        Сохранить точку
-      </button>
-
-      <button class="secondary" style="width:100%;margin-top:8px"
-        onclick="closePicker()">
-        Отмена
-      </button>
-    </div>
   </div>`;
 
-  if(activeView==='list'){
-    fillCitySelect();
-    renderPlacesList();
-  }else{
-    renderMapViewControls();
-    setTimeout(initMainMap,100);
-  }
-}
-
-function renderListView(){
-  const cityNames=['Все',...cities.map(c=>c.name)];
-
-  return `
-    <div class="sectiontitle">
-      <h2>Наши направления</h2>
-    </div>
-
-    <div class="destgrid">
-      ${cityNames.map(city=>{
-        const count=city==='Все'
-          ?places.length
-          :places.filter(p=>p.travel_book_cities?.name===city).length;
-
-        return `
-        <button class="dest ${activeCity===city?'active':''}"
-          onclick="setCity('${esc(city)}')">
-          <strong>${city==='Все'?'🌍 Все направления':esc(city)}</strong>
-          <span>${count} ${count===1?'место':'мест'}</span>
-        </button>`;
-      }).join('')}
-    </div>
-
-    <div class="toolbar">
-      <input id="search" placeholder="🔎 Найти место..."
-        oninput="renderPlacesList()">
-      <button onclick="openModal()">＋ Добавить</button>
-    </div>
-
-    <div class="filters">
-      <button class="${activeFilter==='all'?'active':''}"
-        onclick="setFilter('all')">Все</button>
-      <button class="${activeFilter==='want'?'active':''}"
-        onclick="setFilter('want')">❤️ Хочу</button>
-      <button class="${activeFilter==='visited'?'active':''}"
-        onclick="setFilter('visited')">✓ Были</button>
-    </div>
-
-    <div id="list"></div>
-  `;
-}
-
-function renderMapView(){
-  const cityNames=['Все',...cities.map(c=>c.name)];
-
-  return `
-    <div class="sectiontitle">
-      <h2>Карта наших мест</h2>
-      <button class="small" onclick="openModal()">＋ Добавить</button>
-    </div>
-
-    <div class="mapfilter">
-      ${cityNames.map(city=>`
-        <button class="${activeCity===city?'active':''}"
-          onclick="setCity('${esc(city)}')">
-          ${city==='Все'?'🌍 Все':esc(city)}
-        </button>
-      `).join('')}
-    </div>
-
-    <div class="mapfilter">
-      <button class="${activeFilter==='all'?'active':''}"
-        onclick="setFilter('all')">Все</button>
-      <button class="${activeFilter==='want'?'active':''}"
-        onclick="setFilter('want')">❤️ Хочу</button>
-      <button class="${activeFilter==='visited'?'active':''}"
-        onclick="setFilter('visited')">✓ Были</button>
-    </div>
-
-    <div id="mainMap"></div>
-
-    <p class="mapnote">
-      ❤️ Красные точки — хотим посетить. 🟢 Зелёные — уже посетили.
-    </p>
-
-    <div id="mapList"></div>
-  `;
-}
-
-function fillCitySelect(){
-  const citySelect=$('city');
-  if(!citySelect)return;
-
-  citySelect.innerHTML=cities.map(c=>`
+  $('city').innerHTML=cities.map(c=>`
     <option value="${c.id}">${esc(c.name)}</option>
   `).join('');
+
+  renderList();
 }
 
-function renderPlacesList(){
+function setCity(city){
+  activeCity=city;
+  render();
+}
+
+function setFilter(filter){
+  activeFilter=filter;
+  render();
+}
+
+function renderList(){
   const list=$('list');
   if(!list)return;
 
@@ -603,163 +437,166 @@ function renderPlacesList(){
 
     return `
     <div class="card">
-      <div class="placebody">
-        <h3>${esc(p.name)}</h3>
+      <div class="place">
+        <div class="placebody">
+          <h3>${esc(p.name)}</h3>
+          <span class="badge ${visited?'visited':''}">
+            ${visited?'✓ Посетили':'❤️ Хотим посетить'}
+          </span>
 
-        <span class="badge ${visited?'visited':''}">
-          ${visited?'✓ Посетили':'❤️ Хотим посетить'}
-        </span>
+          <p>📍 ${esc(city)}</p>
 
-        <p>📍 ${esc(city)}</p>
+          ${p.notes?`<p>${esc(p.notes)}</p>`:''}
 
-        ${p.notes?`<p>${esc(p.notes)}</p>`:''}
+          <div class="placeactions">
+            ${mapUrl?`
+              <a class="linkbutton small secondary"
+                href="${esc(mapUrl)}"
+                target="_blank"
+                rel="noopener noreferrer">
+                📍 Карта
+              </a>`:''}
 
-        ${p.latitude!=null&&p.longitude!=null
-          ?`<p>🗺️ Координаты выбраны</p>`
-          :`<p style="color:#b07b42">📍 Точка на карте не выбрана</p>`}
+            ${externalUrl?`
+              <a class="linkbutton small secondary"
+                href="${esc(externalUrl)}"
+                target="_blank"
+                rel="noopener noreferrer">
+                🔗 Ссылка
+              </a>`:''}
 
-        <div class="placeactions">
-          ${mapUrl?`
-            <a class="linkbutton small secondary"
-              href="${esc(mapUrl)}"
-              target="_blank" rel="noopener noreferrer">
-              📍 Google Maps
-            </a>`:''}
+            <button class="small secondary"
+              onclick="editPlace(${p.id})">✏️</button>
 
-          ${externalUrl?`
-            <a class="linkbutton small secondary"
-              href="${esc(externalUrl)}"
-              target="_blank" rel="noopener noreferrer">
-              🔗 Ссылка
-            </a>`:''}
+            <button class="small secondary"
+              onclick="toggleStatus(${p.id})">
+              ${visited?'❤️ Хочу':'✓ Были'}
+            </button>
 
-          <button class="small secondary"
-            onclick="editPlace(${p.id})">✏️</button>
-
-          <button class="small secondary"
-            onclick="toggleStatus(${p.id})">
-            ${visited?'❤️ Хочу':'✓ Были'}
-          </button>
-
-          <button class="small secondary"
-            onclick="deletePlace(${p.id})">🗑</button>
+            <button class="small secondary"
+              onclick="deletePlace(${p.id})">🗑</button>
+          </div>
         </div>
       </div>
     </div>`;
   }).join('');
 }
 
-function renderMapViewControls(){
-  // The controls are already rendered in renderMapView.
-}
+function openModal(){
+  editingId=null;
+  $('modalTitle').textContent='Добавить место';
+  $('placeForm').reset();
 
-function setCity(city){
-  activeCity=city;
-  render();
-}
-
-function setFilter(filter){
-  activeFilter=filter;
-  render();
-}
-
-function setView(view){
-  activeView=view;
-  mainMap=null;
-  render();
-}
-
-function initMainMap(){
-  const mapElement=$('mainMap');
-  if(!mapElement)return;
-
-  if(mainMap){
-    mainMap.remove();
-    mainMap=null;
+  if(activeCity!=='Все'){
+    const city=cities.find(c=>c.name===activeCity);
+    if(city)$('city').value=city.id;
   }
 
-  const center=cityCenters[activeCity]||cityCenters['Все'];
+  $('modalbg').classList.remove('hidden');
+}
 
-  mainMap=L.map('mainMap').setView(center,activeCity==='Все'?7:11);
+function closeModal(){
+  $('modalbg').classList.add('hidden');
+}
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-    attribution:'&copy; OpenStreetMap contributors',
-    maxZoom:19
-  }).addTo(mainMap);
+function backgroundClose(event){
+  if(event.target.id==='modalbg')closeModal();
+}
 
-  const filtered=places.filter(p=>{
-    const city=p.travel_book_cities?.name||'';
-    const cityOk=activeCity==='Все'||city===activeCity;
-    const statusOk=activeFilter==='all'||p.status===activeFilter;
-    return cityOk&&statusOk;
-  });
+function editPlace(id){
+  const p=places.find(x=>x.id===id);
+  if(!p)return;
 
-  const points=filtered.filter(p=>p.latitude!=null&&p.longitude!=null);
+  editingId=id;
+  $('modalTitle').textContent='Редактировать место';
+  $('name').value=p.name||'';
+  $('city').value=p.city_id;
+  $('location').value=p.location_url||'';
+  $('external').value=p.external_url||'';
+  $('notes').value=p.notes||'';
+  $('status').value=p.status||'want';
 
-  points.forEach(p=>{
-    const visited=p.status==='visited';
-    const color=visited?'#388b62':'#d96b60';
+  $('modalbg').classList.remove('hidden');
+}
 
-    const marker=L.circleMarker([p.latitude,p.longitude],{
-      radius:9,
-      color:'#ffffff',
-      weight:3,
-      fillColor:color,
-      fillOpacity:1
-    }).addTo(mainMap);
+async function savePlace(event){
+  event.preventDefault();
 
-    const popup=`
-      <div class="popupTitle">${esc(p.name)}</div>
-      <div class="popupText">${esc(p.travel_book_cities?.name||'')}</div>
-      ${p.notes?`<div class="popupText">${esc(p.notes)}</div>`:''}
-      <div style="margin-top:8px">
-        ${p.status==='visited'?'✓ Посетили':'❤️ Хотим посетить'}
-      </div>
-      ${p.location_url?`
-        <div style="margin-top:10px">
-          <a href="${esc(safeUrl(p.location_url))}"
-            target="_blank" rel="noopener noreferrer">
-            Открыть Google Maps
-          </a>
-        </div>`:''}
-      <div style="margin-top:10px">
-        <button onclick="editPlace(${p.id})"
-          style="padding:7px 10px;font-size:12px">
-          ✏️ Редактировать
-        </button>
-      </div>
-    `;
+  const payload={
+    name:$('name').value.trim(),
+    city_id:Number($('city').value),
+    location_url:$('location').value.trim()||null,
+    external_url:$('external').value.trim()||null,
+    notes:$('notes').value.trim()||null,
+    status:$('status').value
+  };
 
-    marker.bindPopup(popup);
-  });
-
-  if(points.length>0){
-    const bounds=L.latLngBounds(points.map(p=>[p.latitude,p.longitude]));
-    mainMap.fitBounds(bounds,{padding:[30,30],maxZoom:13});
+  if(!payload.name){
+    toast('Укажи название места');
+    return;
   }
 
-  const mapList=$('mapList');
+  let result;
 
-  if(mapList){
-    if(!points.length){
-      mapList.innerHTML=`
-        <div class="card empty">
-          <p>На карте пока нет точек с координатами.</p>
-          <p>Добавь место и выбери точку на карте 📍</p>
-        </div>`;
-    }else{
-      mapList.innerHTML=`
-        <div class="sectiontitle">
-          <h2>Места на карте (${points.length})</h2>
-        </div>
-        ${points.map(p=>`
-          <div class="card">
-            <strong>${esc(p.name)}</strong>
-            <p style="color:var(--muted);font-size:13px">
-              ${esc(p.travel_book_cities?.name||'')}
-              · ${p.status==='visited'?'✓ Посетили':'❤️ Хотим'}
-            </p>
-            <button class="small secondary"
-              onclick="focusPoint(${p.latitude},${p.longitude})">
-              📍 Показать на карте
-            </but
+  if(editingId){
+    result=await sb.from('travel_book_places')
+      .update(payload)
+      .eq('id',editingId);
+  }else{
+    result=await sb.from('travel_book_places')
+      .insert(payload);
+  }
+
+  if(result.error){
+    toast('Не удалось сохранить: '+result.error.message);
+    return;
+  }
+
+  closeModal();
+  toast('Место сохранено ❤️');
+  await loadPlaces();
+}
+
+async function toggleStatus(id){
+  const p=places.find(x=>x.id===id);
+  if(!p)return;
+
+  const newStatus=p.status==='visited'?'want':'visited';
+
+  const {error}=await sb
+    .from('travel_book_places')
+    .update({status:newStatus})
+    .eq('id',id);
+
+  if(error){
+    toast('Ошибка: '+error.message);
+    return;
+  }
+
+  await loadPlaces();
+}
+
+async function deletePlace(id){
+  const p=places.find(x=>x.id===id);
+  if(!p)return;
+
+  if(!confirm(`Удалить «${p.name}»?`))return;
+
+  const {error}=await sb
+    .from('travel_book_places')
+    .delete()
+    .eq('id',id);
+
+  if(error){
+    toast('Ошибка удаления: '+error.message);
+    return;
+  }
+
+  toast('Место удалено');
+  await loadPlaces();
+}
+
+init();
+</script>
+</body>
+</html>
