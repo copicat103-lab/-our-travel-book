@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Our Travel Book</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
 :root{
   --green:#254f40;
@@ -143,28 +142,22 @@ label{
 }
 </style>
 </head>
-
 <body>
 <div id="root"></div>
-
 <script>
 const SUPABASE_URL='https://gmjfxdbefckdmiktxnpb.supabase.co';
 const root=document.getElementById('root');
-
 let sb=null;
 let cities=[];
 let places=[];
 let activeCity='Все';
 let activeFilter='all';
 let editingId=null;
-
 const initialCities=[
   'Бангкок','Као Лак','Ко Яо Яй',
   'Патонг','Най Харн','Най Янг', 'Краби'
 ];
-
 const $=id=>document.getElementById(id);
-
 function esc(s){
   return String(s??'').replace(/[&<>"']/g,c=>({
     '&':'&amp;',
@@ -174,19 +167,15 @@ function esc(s){
     "'":'&#39;'
   }[c]));
 }
-
 function safeUrl(value){
   if(!value)return '';
   let url=String(value).trim();
-
   if(!/^https?:\/\//i.test(url)){
     url='https://'+url;
   }
-
   if(!/^https?:\/\//i.test(url))return '';
   return url;
 }
-
 function toast(message){
   const el=document.createElement('div');
   el.className='toast';
@@ -194,11 +183,9 @@ function toast(message){
   document.body.appendChild(el);
   setTimeout(()=>el.remove(),2800);
 }
-
 function getKey(){
   return localStorage.getItem('travelbook_key')||'';
 }
-
 function showKeyScreen(){
   root.innerHTML=`
   <div class="app">
@@ -218,7 +205,6 @@ function showKeyScreen(){
     </div>
   </div>`;
 }
-
 function saveKey(){
   const value=$('keyInput').value.trim();
   if(!value){
@@ -228,19 +214,15 @@ function saveKey(){
   localStorage.setItem('travelbook_key',value);
   init();
 }
-
 function init(){
   const key=getKey();
-
   if(!key){
     showKeyScreen();
     return;
   }
-
   sb=window.supabase.createClient(SUPABASE_URL,key);
   loadData();
 }
-
 async function loadData(){
   root.innerHTML=`
   <div class="app">
@@ -250,12 +232,10 @@ async function loadData(){
     </div>
     <div class="loading">Загружаем дневник…</div>
   </div>`;
-
   const {data:cityData,error:cityError}=await sb
     .from('travel_book_cities')
     .select('*')
     .order('sort_order');
-
   if(cityError){
     root.innerHTML=`<div class="app"><div class="card">
       <h2>Ошибка загрузки</h2>
@@ -264,7 +244,6 @@ async function loadData(){
     </div></div>`;
     return;
   }
-
   cities=cityData||[];
 
   if(!cities.length){
@@ -280,47 +259,57 @@ async function loadData(){
       .order('sort_order');
 
     cities=result.data||[];
+  } else {
+    // Добавляем только Краби в уже существующий список, если города нет.
+    if(!cities.some(c=>c.name==='Краби')){
+      const nextOrder=Math.max(0,...cities.map(c=>Number(c.sort_order)||0))+1;
+      const {error:insertError}=await sb
+        .from('travel_book_cities')
+        .insert({name:'Краби',emoji:'📍',sort_order:nextOrder});
+
+      if(insertError){
+        toast('Не удалось добавить Краби: '+insertError.message);
+      } else {
+        const result=await sb
+          .from('travel_book_cities')
+          .select('*')
+          .order('sort_order');
+        cities=result.data||cities;
+      }
+    }
   }
 
   await loadPlaces();
 }
-
 async function loadPlaces(){
   const {data,error}=await sb
     .from('travel_book_places')
     .select('*, travel_book_cities(name)')
     .order('created_at',{ascending:false});
-
   if(error){
     toast('Ошибка загрузки мест: '+error.message);
     return;
   }
-
   places=data||[];
   render();
 }
-
 function render(){
   const cityNames=['Все',...cities.map(c=>c.name)];
-
   root.innerHTML=`
   <div class="app">
     <div class="hero">
       <h1>🧳 Our Travel Book</h1>
       <p>Two travelers. One adventure ❤️</p>
     </div>
-
     <div class="content">
       <div class="sectiontitle">
         <h2>Наши направления</h2>
       </div>
-
       <div class="destgrid">
         ${cityNames.map(city=>{
           const count=city==='Все'
             ?places.length
             :places.filter(p=>p.travel_book_cities?.name===city).length;
-
           return `
           <button class="dest ${activeCity===city?'active':''}"
             onclick="setCity('${esc(city)}')">
@@ -329,13 +318,11 @@ function render(){
           </button>`;
         }).join('')}
       </div>
-
       <div class="toolbar">
         <input id="search" placeholder="🔎 Найти место..."
           oninput="renderList()">
         <button onclick="openModal()">＋ Добавить</button>
       </div>
-
       <div class="filters">
         <button class="${activeFilter==='all'?'active':''}"
           onclick="setFilter('all')">Все</button>
@@ -344,81 +331,61 @@ function render(){
         <button class="${activeFilter==='visited'?'active':''}"
           onclick="setFilter('visited')">✓ Были</button>
       </div>
-
       <div id="list"></div>
     </div>
   </div>
-
   <div id="modalbg" class="modalbg hidden" onclick="backgroundClose(event)">
     <div class="modal">
       <div class="modalhead">
         <h2 id="modalTitle">Добавить место</h2>
         <button class="close" onclick="closeModal()">×</button>
       </div>
-
       <form id="placeForm" onsubmit="savePlace(event)">
         <label>Название места *</label>
         <input id="name" required placeholder="Например: красивый пляж">
-
         <label>Город / направление *</label>
         <select id="city" required></select>
-
         <label>Локация / адрес / ссылка на карту</label>
         <input id="location" placeholder="Google Maps или адрес">
-
         <label>Сайт / Instagram / другая ссылка</label>
         <input id="external" placeholder="https://...">
-
         <label>Наши заметки</label>
         <textarea id="notes" placeholder="Что хотим увидеть? Советы, цены, впечатления…"></textarea>
-
         <label>Статус</label>
         <select id="status">
           <option value="want">❤️ Хочу посетить</option>
           <option value="visited">✓ Мы здесь были!</option>
         </select>
-
         <button class="save" type="submit">Сохранить место</button>
       </form>
     </div>
   </div>`;
-
   $('city').innerHTML=cities.map(c=>`
     <option value="${c.id}">${esc(c.name)}</option>
   `).join('');
-
   renderList();
 }
-
 function setCity(city){
   activeCity=city;
   render();
 }
-
 function setFilter(filter){
   activeFilter=filter;
   render();
 }
-
 function renderList(){
   const list=$('list');
   if(!list)return;
-
   const search=$('search')?.value.toLowerCase()||'';
-
   let filtered=places.filter(p=>{
     const city=p.travel_book_cities?.name||'';
-
     const cityOk=activeCity==='Все'||city===activeCity;
     const statusOk=activeFilter==='all'||p.status===activeFilter;
-
     const searchOk=[
       p.name,city,p.notes,p.location_url,p.external_url
     ].join(' ').toLowerCase().includes(search);
-
     return cityOk&&statusOk&&searchOk;
   });
-
   if(!filtered.length){
     list.innerHTML=`
       <div class="card empty">
@@ -428,13 +395,11 @@ function renderList(){
       </div>`;
     return;
   }
-
   list.innerHTML=filtered.map(p=>{
     const city=p.travel_book_cities?.name||'';
     const visited=p.status==='visited';
     const mapUrl=safeUrl(p.location_url);
     const externalUrl=safeUrl(p.external_url);
-
     return `
     <div class="card">
       <div class="place">
@@ -443,11 +408,8 @@ function renderList(){
           <span class="badge ${visited?'visited':''}">
             ${visited?'✓ Посетили':'❤️ Хотим посетить'}
           </span>
-
           <p>📍 ${esc(city)}</p>
-
           ${p.notes?`<p>${esc(p.notes)}</p>`:''}
-
           <div class="placeactions">
             ${mapUrl?`
               <a class="linkbutton small secondary"
@@ -456,7 +418,6 @@ function renderList(){
                 rel="noopener noreferrer">
                 📍 Карта
               </a>`:''}
-
             ${externalUrl?`
               <a class="linkbutton small secondary"
                 href="${esc(externalUrl)}"
@@ -464,15 +425,12 @@ function renderList(){
                 rel="noopener noreferrer">
                 🔗 Ссылка
               </a>`:''}
-
             <button class="small secondary"
               onclick="editPlace(${p.id})">✏️</button>
-
             <button class="small secondary"
               onclick="toggleStatus(${p.id})">
               ${visited?'❤️ Хочу':'✓ Были'}
             </button>
-
             <button class="small secondary"
               onclick="deletePlace(${p.id})">🗑</button>
           </div>
@@ -481,32 +439,25 @@ function renderList(){
     </div>`;
   }).join('');
 }
-
 function openModal(){
   editingId=null;
   $('modalTitle').textContent='Добавить место';
   $('placeForm').reset();
-
   if(activeCity!=='Все'){
     const city=cities.find(c=>c.name===activeCity);
     if(city)$('city').value=city.id;
   }
-
   $('modalbg').classList.remove('hidden');
 }
-
 function closeModal(){
   $('modalbg').classList.add('hidden');
 }
-
 function backgroundClose(event){
   if(event.target.id==='modalbg')closeModal();
 }
-
 function editPlace(id){
   const p=places.find(x=>x.id===id);
   if(!p)return;
-
   editingId=id;
   $('modalTitle').textContent='Редактировать место';
   $('name').value=p.name||'';
@@ -515,13 +466,10 @@ function editPlace(id){
   $('external').value=p.external_url||'';
   $('notes').value=p.notes||'';
   $('status').value=p.status||'want';
-
   $('modalbg').classList.remove('hidden');
 }
-
 async function savePlace(event){
   event.preventDefault();
-
   const payload={
     name:$('name').value.trim(),
     city_id:Number($('city').value),
@@ -530,14 +478,11 @@ async function savePlace(event){
     notes:$('notes').value.trim()||null,
     status:$('status').value
   };
-
   if(!payload.name){
     toast('Укажи название места');
     return;
   }
-
   let result;
-
   if(editingId){
     result=await sb.from('travel_book_places')
       .update(payload)
@@ -546,56 +491,43 @@ async function savePlace(event){
     result=await sb.from('travel_book_places')
       .insert(payload);
   }
-
   if(result.error){
     toast('Не удалось сохранить: '+result.error.message);
     return;
   }
-
   closeModal();
   toast('Место сохранено ❤️');
   await loadPlaces();
 }
-
 async function toggleStatus(id){
   const p=places.find(x=>x.id===id);
   if(!p)return;
-
   const newStatus=p.status==='visited'?'want':'visited';
-
   const {error}=await sb
     .from('travel_book_places')
     .update({status:newStatus})
     .eq('id',id);
-
   if(error){
     toast('Ошибка: '+error.message);
     return;
   }
-
   await loadPlaces();
 }
-
 async function deletePlace(id){
   const p=places.find(x=>x.id===id);
   if(!p)return;
-
   if(!confirm(`Удалить «${p.name}»?`))return;
-
   const {error}=await sb
     .from('travel_book_places')
     .delete()
     .eq('id',id);
-
   if(error){
     toast('Ошибка удаления: '+error.message);
     return;
   }
-
   toast('Место удалено');
   await loadPlaces();
 }
-
 init();
 </script>
 </body>
