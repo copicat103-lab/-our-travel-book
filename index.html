@@ -23,16 +23,22 @@ body{
   color:var(--ink)
 }
 button,input,textarea,select{font:inherit}
-button{
+button,.linkbutton{
   cursor:pointer;border:0;border-radius:13px;
   padding:12px 15px;background:var(--green);
   color:white;font-weight:650
 }
-button.secondary{
+button.secondary,.linkbutton.secondary{
   background:white;color:var(--green);
   border:1px solid var(--line)
 }
-button.small{padding:8px 10px;font-size:13px}
+button.small,.linkbutton.small{padding:8px 10px;font-size:13px}
+.linkbutton{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+}
 input,textarea,select{
   width:100%;border:1px solid var(--line);
   background:white;border-radius:12px;
@@ -161,9 +167,24 @@ const $=id=>document.getElementById(id);
 
 function esc(s){
   return String(s??'').replace(/[&<>"']/g,c=>({
-    '&':'&amp;','<':'&lt;','>':'&gt;',
-    '"':'&quot;',"'":'&#39;'
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
   }[c]));
+}
+
+function safeUrl(value){
+  if(!value)return '';
+  let url=String(value).trim();
+
+  if(!/^https?:\/\//i.test(url)){
+    url='https://'+url;
+  }
+
+  if(!/^https?:\/\//i.test(url))return '';
+  return url;
 }
 
 function toast(message){
@@ -411,6 +432,8 @@ function renderList(){
   list.innerHTML=filtered.map(p=>{
     const city=p.travel_book_cities?.name||'';
     const visited=p.status==='visited';
+    const mapUrl=safeUrl(p.location_url);
+    const externalUrl=safeUrl(p.external_url);
 
     return `
     <div class="card">
@@ -426,17 +449,21 @@ function renderList(){
           ${p.notes?`<p>${esc(p.notes)}</p>`:''}
 
           <div class="placeactions">
-            ${p.location_url?`
-              <button class="small secondary"
-                onclick="openLink(${JSON.stringify(p.location_url)})">
+            ${mapUrl?`
+              <a class="linkbutton small secondary"
+                href="${esc(mapUrl)}"
+                target="_blank"
+                rel="noopener noreferrer">
                 📍 Карта
-              </button>`:''}
+              </a>`:''}
 
-            ${p.external_url?`
-              <button class="small secondary"
-                onclick="openLink(${JSON.stringify(p.external_url)})">
+            ${externalUrl?`
+              <a class="linkbutton small secondary"
+                href="${esc(externalUrl)}"
+                target="_blank"
+                rel="noopener noreferrer">
                 🔗 Ссылка
-              </button>`:''}
+              </a>`:''}
 
             <button class="small secondary"
               onclick="editPlace(${p.id})">✏️</button>
@@ -453,18 +480,6 @@ function renderList(){
       </div>
     </div>`;
   }).join('');
-}
-
-function openLink(url){
-  if(!url)return;
-
-  let link=url.trim();
-
-  if(!/^https?:\/\//i.test(link)){
-    link='https://'+link;
-  }
-
-  window.location.href=link;
 }
 
 function openModal(){
