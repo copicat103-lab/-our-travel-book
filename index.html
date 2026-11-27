@@ -457,9 +457,14 @@ function renderList(){
 
 function openLink(url){
   if(!url)return;
+
   let link=url.trim();
-  if(!/^https?:\/\//i.test(link))link='https://'+link;
-  window.open(link,'_blank');
+
+  if(!/^https?:\/\//i.test(link)){
+    link='https://'+link;
+  }
+
+  window.location.href=link;
 }
 
 function openModal(){
